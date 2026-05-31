@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fast Tracker — Live</title>
@@ -118,6 +119,20 @@
   .ms-banner .mb-title { font-size: 0.9rem; font-weight: 800; color: #7ad89a; }
   .ms-banner .mb-detail { font-size: 0.76rem; color: #aaccb5; margin-top: 3px; line-height: 1.45; }
   .ms-banner .mb-dismiss { background: rgba(255,255,255,0.1); border: none; color: #cfe; width: 26px; height: 26px; border-radius: 50%; font-size: 1rem; cursor: pointer; flex-shrink: 0; font-family: inherit; }
+
+  /* Hour-by-hour schedule */
+  .sched-row { display: flex; align-items: flex-start; gap: 12px; padding: 9px 12px; border: 1px solid #1a1a22; border-radius: 9px; margin-bottom: 5px; background: #111116; transition: opacity 0.2s; }
+  .sched-row.past { opacity: 0.4; }
+  .sched-row.next { border-color: #2a8a52; background: #11251a; box-shadow: 0 0 14px rgba(42,138,82,0.18); }
+  .sched-row.milerow { border-color: #4a4a1a; background: #16160c; }
+  .sched-time { width: 86px; flex-shrink: 0; font-size: 0.74rem; font-weight: 800; color: #6aaae0; line-height: 1.3; }
+  .sched-row.next .sched-time { color: #7ad89a; }
+  .sched-rel { display: block; font-size: 0.62rem; color: #555; font-weight: 600; }
+  .sched-act { flex: 1; font-size: 0.82rem; color: #ccc; line-height: 1.4; }
+  .sched-act .ic { margin-right: 6px; }
+  .sched-row.next .sched-act { color: #eafff0; }
+  .sched-row.milerow .sched-act { color: #d8c88a; font-weight: 600; }
+  .next-pill { display: inline-block; font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; background: #2a8a52; color: #fff; padding: 1px 7px; border-radius: 8px; margin-left: 6px; }
 </style>
 </head>
 <body>
@@ -160,6 +175,10 @@
 <h2>Milestones</h2>
 <div id="milestones"></div>
 
+<h2>Hour-by-Hour Protocol <span style="font-weight:600;text-transform:none;letter-spacing:0;color:#777;">— what to do &amp; when</span></h2>
+<div id="schedule-empty" style="font-size:0.8rem;color:#777;padding:4px 0 8px;">Set a start time to generate your hourly schedule.</div>
+<div id="schedule"></div>
+
 <h2>Electrolytes — Non-Negotiable (tap to check off, resets each new dose)</h2>
 <div class="elec-card">
   <div class="elec-row"><div class="elec-check" data-elec="sodium"></div><div class="elec-body"><div class="elec-name">Sodium 3,000–5,000 mg/day</div><div class="elec-detail">Salt water (¼ tsp pink salt in water) + bone broth. Salt MORE than feels normal.</div></div></div>
@@ -177,12 +196,8 @@
   </div>
   <div class="allow-card allow-no">
     <div class="allow-title">✗ Breaks the Fast</div>
-    <div>MCT oil <span style="color:#666;">(OK in 16:8, not here)</span><br>Heavy cream<br>Any sweetener (even erythritol)<br>Food of any kind<br><span class="flag">⚠ 5-Hour Energy — see note</span></div>
+    <div>MCT oil <span style="color:#666;">(OK in 16:8, not here)</span><br>Heavy cream<br>Any sweetener (even erythritol)<br>Food of any kind</div>
   </div>
-</div>
-
-<div class="disclaimer">
-  <strong style="color:#ccaa55;">5-Hour Energy note:</strong> ~4 cal, won't break the fast metabolically. BUT it's sweetened with sucralose — the sweetener you reacted to this morning — and can trigger a small insulin response. Black coffee does the same caffeine job clean. If you have it, watch your stomach and treat it as the one "dirty" input of the fast.
 </div>
 
 <h2>🔴 Stop the Fast NOW If…</h2>
@@ -260,6 +275,52 @@
     }
   }
 
+  function buildSchedule(start, now) {
+    var emptyEl = document.getElementById('schedule-empty');
+    var schedEl = document.getElementById('schedule');
+    if (!start) { if (emptyEl) emptyEl.style.display = 'block'; if (schedEl) schedEl.innerHTML = ''; return; }
+    if (emptyEl) emptyEl.style.display = 'none';
+
+    var rows = [];
+    for (var h = 0; h <= 72; h += 2) {
+      var icon, text, mile = false;
+      if (h === 0) {
+        icon = '🍽️'; text = 'Last bite done · 12 oz salt water · magnesium tonight before bed';
+      } else if (h % 12 === 0) {
+        var ms = MILESTONES.filter(function(m){ return m.h === h; })[0];
+        icon = '🍲'; mile = !!ms;
+        text = 'Bone broth (1 cup) + electrolytes' + (h % 24 === 0 ? ' + magnesium' : '');
+        if (ms) text += ' — <b>' + ms.label + '</b>';
+      } else {
+        var r = h % 12;
+        if (r === 2 || r === 8) { icon = '🧂'; text = 'Water + pinch of salt'; }
+        else if (r === 4 || r === 10) { icon = '⚡'; text = 'Electrolytes (sodium + potassium) + water'; }
+        else { icon = '☕'; text = 'Black coffee or green tea + water'; }
+      }
+      rows.push({ h: h, t: start + h * 3600000, icon: icon, text: text, mile: mile });
+    }
+
+    var nextIdx = -1;
+    for (var i = 0; i < rows.length; i++) { if (rows[i].t >= now) { nextIdx = i; break; } }
+    if (nextIdx === -1) nextIdx = rows.length - 1;
+    var from = Math.max(0, nextIdx - 1);
+    var to = Math.min(rows.length, nextIdx + 8);
+
+    var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var html = '';
+    for (var j = from; j < to; j++) {
+      var row = rows[j];
+      var d = new Date(row.t);
+      var hh = d.getHours(); var ampm = hh >= 12 ? 'PM' : 'AM'; var h12 = hh % 12 || 12;
+      var clock = days[d.getDay()] + ' ' + h12 + ':' + pad(d.getMinutes()) + ' ' + ampm;
+      var cls = 'sched-row' + (j < nextIdx ? ' past' : '') + (j === nextIdx ? ' next' : '') + (row.mile ? ' milerow' : '');
+      var pill = (j === nextIdx) ? '<span class="next-pill">next</span>' : '';
+      html += '<div class="' + cls + '"><div class="sched-time">' + clock + '<span class="sched-rel">' + row.h + 'h in</span></div>' +
+        '<div class="sched-act"><span class="ic">' + row.icon + '</span>' + row.text + pill + '</div></div>';
+    }
+    schedEl.innerHTML = html;
+  }
+
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
   function toLocalInputValue(ms) {
@@ -304,6 +365,7 @@
       document.querySelectorAll('.milestone').forEach(function(el){ el.classList.remove('passed','current'); });
       document.querySelectorAll('[data-clock]').forEach(function(el){ el.textContent=''; });
       document.querySelectorAll('[data-check]').forEach(function(el){ el.textContent=''; });
+      buildSchedule(null);
       return;
     }
 
@@ -331,6 +393,7 @@
       checkMilestone(elapsedH);
     }
     sinceEl.textContent = fmtSince(start);
+    buildSchedule(start, now);
 
     // milestone clocks + states
     var currentSet = false;
