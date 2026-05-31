@@ -293,6 +293,17 @@
 
 <script>
 (function() {
+  // Schema guard: if the module structure changes (this constant bumps), clear stale
+  // picks so saved indexes can't point at the wrong options. Bump WV when modules change.
+  try {
+    var WV = '2026-06-01';
+    if (localStorage.getItem('workout-schema') !== WV) {
+      localStorage.removeItem('workout-picks');
+      localStorage.removeItem('workout-pick-labels');
+      localStorage.setItem('workout-schema', WV);
+    }
+  } catch (e) {}
+
   // Expand/collapse days
   document.querySelectorAll('.day-card').forEach(function(card) {
     card.querySelector('.day-head').addEventListener('click', function(e) {

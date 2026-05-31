@@ -117,7 +117,7 @@
 
 <h2>Plan Your Week</h2>
 <div class="section-intro">
-  Tap the <strong>+</strong> next to any recipe below to add it to this week. When you're done, the <strong>"Build Shopping List"</strong> bar at the bottom turns your picks into a checklist — ingredients combined and sorted by store. <a href="meal-plan-list.html">View current meal-plan list →</a>
+  Use the <strong>+ / −</strong> stepper next to each recipe to set how many times you'll make it (e.g. pancakes ×4). The bar at the bottom counts your <strong>meals toward your weekly target</strong> (default 21 = 3/day — tap the number to change it) and totals the cost. Hit <strong>"Build →"</strong> for the shopping list, scaled to your quantities. <a href="meal-plan-list.html">View current list →</a>
 </div>
 
 <h2>Meal 1 — Post-WOD (largest meal)</h2>
@@ -297,40 +297,39 @@
 </footer>
 
 <style>
-  .recipe { position: relative; padding-left: 46px !important; }
-  .add-week {
-    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-    width: 26px; height: 26px; border-radius: 50%; border: 2px solid #c0c0c0;
-    background: #fff; color: #888; font-size: 1rem; font-weight: 700; line-height: 1;
-    display: flex; align-items: center; justify-content: center; cursor: pointer;
-    z-index: 5; transition: all 0.15s; padding: 0;
-  }
-  .add-week:hover { border-color: #1f7a3f; color: #1f7a3f; }
-  .add-week { transition: all 0.12s, transform 0.08s; }
-  .add-week:active { transform: translateY(-50%) scale(0.85); }
-  .recipe { transition: background 0.1s; }
+  .recipe { position: relative; padding-left: 78px !important; transition: background 0.1s; }
   .recipe:active { background: #ececec; }
-  .plan-tray a.build:active, .plan-tray button.clear:active { transform: scale(0.95); }
-  .add-week.in { background: #1f7a3f; border-color: #1f7a3f; color: #fff; }
+  .mp-step { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 3px; z-index: 5; }
+  .mp-btn { width: 23px; height: 23px; border-radius: 50%; border: 2px solid #c0c0c0; background: #fff; color: #1f7a3f; font-size: 1rem; font-weight: 800; line-height: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: transform 0.08s, background 0.12s, border-color 0.12s; }
+  .mp-btn:active { transform: scale(0.82); }
+  .mp-plus.has { background: #1f7a3f; border-color: #1f7a3f; color: #fff; }
+  .mp-count { min-width: 15px; text-align: center; font-weight: 800; font-size: 0.86rem; color: #15602f; }
+  .mp-step.zero .mp-minus, .mp-step.zero .mp-count { display: none; }
   .plan-tray {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
-    background: #15602f; color: #fff; padding: 11px 16px;
+    background: #15602f; color: #fff; padding: 10px 14px;
     display: none; align-items: center; gap: 12px;
     box-shadow: 0 -4px 16px rgba(0,0,0,0.18); font-size: 0.85rem;
   }
   .plan-tray.show { display: flex; }
-  .plan-tray .ct { font-weight: 800; white-space: nowrap; }
-  .plan-tray .cost { font-weight: 800; color: #b8eccb; font-size: 0.95rem; white-space: nowrap; }
-  .plan-tray .names { flex: 1; font-size: 0.72rem; opacity: 0.8; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-width: 0; }
-  .plan-tray a.build { background: #fff; color: #15602f; font-weight: 800; padding: 8px 14px; border-radius: 7px; text-decoration: none; font-size: 0.8rem; white-space: nowrap; }
-  .plan-tray button.clear { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: #fff; padding: 7px 11px; border-radius: 7px; font-size: 0.72rem; cursor: pointer; font-family: inherit; }
-  body { padding-bottom: 70px; }
+  .tray-meals { display: flex; align-items: center; gap: 4px; font-weight: 800; white-space: nowrap; }
+  .tray-meals #plan-meals { font-size: 1.15rem; }
+  .tray-meals.hit #plan-meals { color: #b8eccb; }
+  .tray-meals input { width: 38px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 5px; font-size: 0.9rem; font-weight: 800; text-align: center; font-family: inherit; padding: 2px 0; }
+  .tray-meals .mlbl { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.85; }
+  .plan-tray .cost { font-weight: 800; color: #b8eccb; font-size: 0.9rem; white-space: nowrap; flex: 1; }
+  .plan-tray a.build { background: #fff; color: #15602f; font-weight: 800; padding: 8px 13px; border-radius: 7px; text-decoration: none; font-size: 0.8rem; white-space: nowrap; }
+  .plan-tray a.build:active { transform: scale(0.95); }
+  .plan-tray button.clear { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: #fff; padding: 7px 10px; border-radius: 7px; font-size: 0.7rem; cursor: pointer; font-family: inherit; }
+  .plan-tray button.clear:active { transform: scale(0.95); }
+  body { padding-bottom: 74px; }
 </style>
 
 <div class="plan-tray" id="plan-tray">
-  <span class="ct" id="plan-ct">0</span>
+  <div class="tray-meals" id="tray-meals">
+    <span id="plan-meals">0</span><span>/</span><input id="plan-target" type="number" min="1" max="99" value="21"><span class="mlbl">meals</span>
+  </div>
   <span class="cost" id="plan-cost"></span>
-  <span class="names" id="plan-names"></span>
   <button class="clear" id="plan-clear">Clear</button>
   <a class="build" href="meal-plan-list.html">Build →</a>
 </div>
@@ -338,65 +337,78 @@
 <script src="recipes-data.js"></script>
 <script>
 (function() {
-  var WEEK_KEY = 'meal-plan-week';
-  function getWeek() { try { return JSON.parse(localStorage.getItem(WEEK_KEY) || '[]'); } catch(e) { return []; } }
-  function setWeek(a) { localStorage.setItem(WEEK_KEY, JSON.stringify(a)); }
+  var COUNTS = 'meal-plan-counts', TARGET = 'meal-target';
+  function getCounts() { try { return JSON.parse(localStorage.getItem(COUNTS) || '{}'); } catch(e) { return {}; } }
+  function setCounts(c) { localStorage.setItem(COUNTS, JSON.stringify(c)); }
+  function getTarget() { var t = parseInt(localStorage.getItem(TARGET) || '21', 10); return (t > 0) ? t : 21; }
 
   var tray = document.getElementById('plan-tray');
-  var ctEl = document.getElementById('plan-ct');
+  var mealsEl = document.getElementById('plan-meals');
   var costEl = document.getElementById('plan-cost');
-  var namesEl = document.getElementById('plan-names');
+  var trayMeals = document.getElementById('tray-meals');
+  var targetInput = document.getElementById('plan-target');
+  targetInput.value = getTarget();
 
   function idFromHref(href) { return (href || '').replace(/^.*\//, '').replace(/\.html.*$/, ''); }
-
-  function weekCost(week) {
-    var costs = window.RECIPE_COST || {};
-    return week.reduce(function(sum, id){ return sum + (costs[id] || 0); }, 0);
-  }
+  function totalMeals(c) { return Object.keys(c).reduce(function(s, id){ return s + c[id]; }, 0); }
+  function totalCost(c) { var costs = window.RECIPE_COST || {}; return Object.keys(c).reduce(function(s, id){ return s + (costs[id] || 0) * c[id]; }, 0); }
 
   function refreshTray() {
-    var week = getWeek();
-    ctEl.textContent = week.length + (week.length === 1 ? ' recipe' : ' recipes');
-    costEl.textContent = week.length ? ('~$' + weekCost(week) + '/wk') : '';
-    if (window.RECIPES) {
-      namesEl.textContent = week.map(function(id){ return (window.RECIPES[id] || {}).name || id; }).join(' · ');
-    }
-    tray.classList.toggle('show', week.length > 0);
+    var c = getCounts();
+    var meals = totalMeals(c);
+    var target = getTarget();
+    mealsEl.textContent = meals;
+    costEl.textContent = meals ? ('~$' + totalCost(c) + '/wk') : '';
+    trayMeals.classList.toggle('hit', meals >= target && meals > 0);
+    tray.classList.toggle('show', meals > 0);
   }
 
   document.querySelectorAll('a.recipe').forEach(function(a) {
     var id = idFromHref(a.getAttribute('href'));
     if (!id) return;
-    // cost cell (column 6 on desktop, the one stat shown on mobile)
+    var cost = (window.RECIPE_COST || {})[id];
     var costCell = document.createElement('div');
     costCell.className = 'recipe-cost';
-    var c = (window.RECIPE_COST || {})[id];
-    costCell.textContent = c ? ('~$' + c) : '';
+    costCell.textContent = cost ? ('~$' + cost) : '';
     a.appendChild(costCell);
-    var btn = document.createElement('button');
-    btn.className = 'add-week';
-    btn.type = 'button';
-    btn.setAttribute('aria-label', 'Add to week');
+
+    var step = document.createElement('div'); step.className = 'mp-step';
+    var minus = document.createElement('button'); minus.className = 'mp-btn mp-minus'; minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', 'one less');
+    var cnt = document.createElement('span'); cnt.className = 'mp-count';
+    var plus = document.createElement('button'); plus.className = 'mp-btn mp-plus'; plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', 'add one');
+    step.appendChild(minus); step.appendChild(cnt); step.appendChild(plus);
+    a.appendChild(step);
+
     function sync() {
-      var inWeek = getWeek().indexOf(id) !== -1;
-      btn.classList.toggle('in', inWeek);
-      btn.textContent = inWeek ? '✓' : '+';
+      var n = getCounts()[id] || 0;
+      cnt.textContent = n;
+      step.classList.toggle('zero', n === 0);
+      plus.classList.toggle('has', n > 0);
     }
-    btn.addEventListener('click', function(e) {
+    function bump(d, e) {
       e.preventDefault(); e.stopPropagation();
-      var week = getWeek();
-      var i = week.indexOf(id);
-      if (i === -1) week.push(id); else week.splice(i, 1);
-      setWeek(week);
-      sync(); refreshTray();
-    });
-    a.appendChild(btn);
+      var c = getCounts();
+      var n = (c[id] || 0) + d;
+      if (n <= 0) delete c[id]; else c[id] = n;
+      setCounts(c); sync(); refreshTray();
+    }
+    plus.addEventListener('click', function(e){ bump(1, e); });
+    minus.addEventListener('click', function(e){ bump(-1, e); });
     sync();
   });
 
+  targetInput.addEventListener('input', function() {
+    var t = parseInt(targetInput.value, 10);
+    if (t > 0) { localStorage.setItem(TARGET, String(t)); refreshTray(); }
+  });
+
   document.getElementById('plan-clear').addEventListener('click', function() {
-    setWeek([]);
-    document.querySelectorAll('.add-week').forEach(function(b){ b.classList.remove('in'); b.textContent = '+'; });
+    setCounts({});
+    document.querySelectorAll('.mp-step').forEach(function(s){
+      s.classList.add('zero');
+      s.querySelector('.mp-count').textContent = '0';
+      s.querySelector('.mp-plus').classList.remove('has');
+    });
     refreshTray();
   });
 

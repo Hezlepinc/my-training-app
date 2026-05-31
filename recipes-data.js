@@ -267,3 +267,19 @@ window.RECIPE_COST = {
   "caesar-dressing": 5,
   "bbq-sauce": 2
 };
+
+/* Meal-plan storage = { recipeId: count }. Migrate the old array form, drop any
+ * ids that no longer exist or have a non-positive count. Self-healing on every load. */
+try {
+  var _counts = JSON.parse(localStorage.getItem('meal-plan-counts') || 'null');
+  if (!_counts) {
+    var _wk = JSON.parse(localStorage.getItem('meal-plan-week') || '[]');
+    _counts = {};
+    _wk.forEach(function(id){ _counts[id] = (_counts[id] || 0) + 1; });
+  }
+  var _clean = {};
+  Object.keys(_counts).forEach(function(id){
+    if (window.RECIPES[id] && _counts[id] > 0) _clean[id] = _counts[id];
+  });
+  localStorage.setItem('meal-plan-counts', JSON.stringify(_clean));
+} catch (e) {}

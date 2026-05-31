@@ -78,11 +78,13 @@
 <script src="recipes-data.js"></script>
 <script>
 (function() {
-  var WEEK_KEY = 'meal-plan-week';
+  var COUNTS_KEY = 'meal-plan-counts';
+  var TARGET_KEY = 'meal-target';
   var CHECK_KEY = 'meal-plan-checks';
   var content = document.getElementById('content');
 
-  function getWeek() { try { return JSON.parse(localStorage.getItem(WEEK_KEY) || '[]'); } catch(e) { return []; } }
+  function getCounts() { try { return JSON.parse(localStorage.getItem(COUNTS_KEY) || '{}'); } catch(e) { return {}; } }
+  function getTarget() { var t = parseInt(localStorage.getItem(TARGET_KEY) || '21', 10); return (t > 0) ? t : 21; }
   function getChecks() { try { return JSON.parse(localStorage.getItem(CHECK_KEY) || '{}'); } catch(e) { return {}; } }
   function setChecks(s) { localStorage.setItem(CHECK_KEY, JSON.stringify(s)); }
 
@@ -105,47 +107,50 @@
   };
 
   function render() {
-    var week = getWeek().filter(function(id){ return window.RECIPES && window.RECIPES[id]; });
+    var counts = getCounts();
+    var week = Object.keys(counts).filter(function(id){ return window.RECIPES && window.RECIPES[id] && counts[id] > 0; });
     if (!week.length) {
-      content.innerHTML = '<div class="empty"><h2>No recipes picked yet</h2>' +
-        'Go to the <a href="index.html">Cookbook</a> and tap <strong>“+ Add to week”</strong> on the recipes you want. ' +
+      content.innerHTML = '<div class="empty"><h2>No meals planned yet</h2>' +
+        'Go to the <a href="index.html">Cookbook</a> and use the <strong>+</strong> stepper to add meals. ' +
         'Come back here and your shopping list builds itself.</div>';
       return;
     }
 
-    // Aggregate
-    var buy = { costco: {}, publix: {}, amazon: {} };   // key item|unit -> {item,unit,qty,store,from:Set}
-    var staples = {};                                    // item -> from Set
+    // Aggregate — each recipe scaled by how many times you'll make it (its count)
+    var buy = { costco: {}, publix: {}, amazon: {} };   // key item|unit -> {item,unit,qty,store,from:[]}
+    var staples = {};                                    // item -> true
     var recipeNames = [];
 
     week.forEach(function(id) {
       var r = window.RECIPES[id];
-      recipeNames.push(r.name);
+      var n = counts[id];
+      recipeNames.push(r.name + (n > 1 ? ' ×' + n : ''));
       r.ingredients.forEach(function(ing) {
-        if (ing.staple) {
-          if (!staples[ing.item]) staples[ing.item] = true;
-          return;
-        }
+        if (ing.staple) { staples[ing.item] = true; return; }
         var store = ing.store || 'publix';
         var key = ing.item + '|' + (ing.unit || '');
+        var add = (ing.qty != null) ? ing.qty * n : null;   // scale by count
         if (!buy[store][key]) {
-          buy[store][key] = { item: ing.item, unit: ing.unit || '', qty: ing.qty, store: store, from: [r.name] };
+          buy[store][key] = { item: ing.item, unit: ing.unit || '', qty: add, store: store, from: [r.name] };
         } else {
           var e = buy[store][key];
-          if (e.qty != null && ing.qty != null) e.qty += ing.qty;
+          if (e.qty != null && add != null) e.qty += add;
           if (e.from.indexOf(r.name) === -1) e.from.push(r.name);
         }
       });
     });
 
     var costs = window.RECIPE_COST || {};
-    var totalCost = week.reduce(function(s, id){ return s + (costs[id] || 0); }, 0);
+    var totalCost = week.reduce(function(s, id){ return s + (costs[id] || 0) * counts[id]; }, 0);
+    var totalMeals = week.reduce(function(s, id){ return s + counts[id]; }, 0);
+    var target = getTarget();
 
     var html = '';
     html += '<div class="from-plan"><strong>This week:</strong> <span class="recipes">' +
       recipeNames.join(' · ') + '</span>' +
-      '<div style="margin-top:9px;font-weight:800;color:#15602f;font-size:1rem;">Estimated groceries: ~$' + totalCost + '</div>' +
-      '<div style="font-size:0.72rem;color:#888;margin-top:3px;line-height:1.4;">Upper-bound estimate — shared staples (cheese, oil, eggs) are bought once but counted per recipe, so your real spend is usually a bit lower.</div></div>';
+      '<div style="margin-top:9px;font-weight:800;font-size:1rem;color:' + (totalMeals >= target ? '#15602f' : '#8a6a20') + ';">' +
+      totalMeals + ' / ' + target + ' meals planned &nbsp;·&nbsp; Est. groceries ~$' + totalCost + '</div>' +
+      '<div style="font-size:0.72rem;color:#888;margin-top:3px;line-height:1.4;">Cost &amp; ingredient amounts scale with how many times you make each recipe. Upper-bound — shared staples (cheese, oil, eggs) bought once but counted per recipe, so real spend is usually a bit lower.</div></div>';
 
     // progress bar
     html += '<div class="progress-bar"><div class="progress-row">' +

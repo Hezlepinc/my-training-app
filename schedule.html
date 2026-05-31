@@ -73,6 +73,16 @@
 
 <script>
 (function() {
+  // Schema guard (mirror of workout.html) — keep stale picks from showing here either.
+  try {
+    var WV = '2026-06-01';
+    if (localStorage.getItem('workout-schema') !== WV) {
+      localStorage.removeItem('workout-picks');
+      localStorage.removeItem('workout-pick-labels');
+      localStorage.setItem('workout-schema', WV);
+    }
+  } catch (e) {}
+
   var DONE = 'workout-week-done';
   var LABELS = 'workout-pick-labels';
 
