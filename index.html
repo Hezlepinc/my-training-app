@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keto Recipe Cookbook — DeLauer Protocol</title>
@@ -98,6 +99,11 @@
 <h2>Shopping Lists</h2>
 <div class="section-intro">
   Two views of the same list. <strong><a href="shopping-list-by-store.html">By store</a></strong> (Costco → Publix → Amazon) for the shopping trip itself. <strong><a href="shopping-list.html">By category</a></strong> for kitchen reference and meal prep.
+</div>
+
+<h2>Plan Your Week</h2>
+<div class="section-intro">
+  Tap the <strong>+</strong> next to any recipe below to add it to this week. When you're done, the <strong>"Build Shopping List"</strong> bar at the bottom turns your picks into a checklist — ingredients combined and sorted by store. <a href="meal-plan-list.html">View current meal-plan list →</a>
 </div>
 
 <h2>Meal 1 — Post-WOD (largest meal)</h2>
@@ -275,6 +281,94 @@
 <footer>
   Keto Recipe Cookbook &nbsp;|&nbsp; Cross-checked against clean-keto filter &nbsp;|&nbsp; Companion to keto-plan.md &nbsp;|&nbsp; Created 2026-05-30
 </footer>
+
+<style>
+  .recipe { position: relative; padding-left: 46px !important; }
+  .add-week {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 26px; height: 26px; border-radius: 50%; border: 2px solid #c0c0c0;
+    background: #fff; color: #888; font-size: 1rem; font-weight: 700; line-height: 1;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    z-index: 5; transition: all 0.15s; padding: 0;
+  }
+  .add-week:hover { border-color: #1f7a3f; color: #1f7a3f; }
+  .add-week.in { background: #1f7a3f; border-color: #1f7a3f; color: #fff; }
+  .plan-tray {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
+    background: #15602f; color: #fff; padding: 11px 16px;
+    display: none; align-items: center; gap: 12px;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.18); font-size: 0.85rem;
+  }
+  .plan-tray.show { display: flex; }
+  .plan-tray .ct { font-weight: 800; }
+  .plan-tray .names { flex: 1; font-size: 0.72rem; opacity: 0.85; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .plan-tray a.build { background: #fff; color: #15602f; font-weight: 800; padding: 8px 14px; border-radius: 7px; text-decoration: none; font-size: 0.8rem; white-space: nowrap; }
+  .plan-tray button.clear { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: #fff; padding: 7px 11px; border-radius: 7px; font-size: 0.72rem; cursor: pointer; font-family: inherit; }
+  body { padding-bottom: 70px; }
+</style>
+
+<div class="plan-tray" id="plan-tray">
+  <span class="ct" id="plan-ct">0</span>
+  <span class="names" id="plan-names"></span>
+  <button class="clear" id="plan-clear">Clear</button>
+  <a class="build" href="meal-plan-list.html">Build Shopping List →</a>
+</div>
+
+<script src="recipes-data.js"></script>
+<script>
+(function() {
+  var WEEK_KEY = 'meal-plan-week';
+  function getWeek() { try { return JSON.parse(localStorage.getItem(WEEK_KEY) || '[]'); } catch(e) { return []; } }
+  function setWeek(a) { localStorage.setItem(WEEK_KEY, JSON.stringify(a)); }
+
+  var tray = document.getElementById('plan-tray');
+  var ctEl = document.getElementById('plan-ct');
+  var namesEl = document.getElementById('plan-names');
+
+  function idFromHref(href) { return (href || '').replace(/^.*\//, '').replace(/\.html.*$/, ''); }
+
+  function refreshTray() {
+    var week = getWeek();
+    ctEl.textContent = week.length + (week.length === 1 ? ' recipe' : ' recipes');
+    if (window.RECIPES) {
+      namesEl.textContent = week.map(function(id){ return (window.RECIPES[id] || {}).name || id; }).join(' · ');
+    }
+    tray.classList.toggle('show', week.length > 0);
+  }
+
+  document.querySelectorAll('a.recipe').forEach(function(a) {
+    var id = idFromHref(a.getAttribute('href'));
+    if (!id) return;
+    var btn = document.createElement('button');
+    btn.className = 'add-week';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Add to week');
+    function sync() {
+      var inWeek = getWeek().indexOf(id) !== -1;
+      btn.classList.toggle('in', inWeek);
+      btn.textContent = inWeek ? '✓' : '+';
+    }
+    btn.addEventListener('click', function(e) {
+      e.preventDefault(); e.stopPropagation();
+      var week = getWeek();
+      var i = week.indexOf(id);
+      if (i === -1) week.push(id); else week.splice(i, 1);
+      setWeek(week);
+      sync(); refreshTray();
+    });
+    a.appendChild(btn);
+    sync();
+  });
+
+  document.getElementById('plan-clear').addEventListener('click', function() {
+    setWeek([]);
+    document.querySelectorAll('.add-week').forEach(function(b){ b.classList.remove('in'); b.textContent = '+'; });
+    refreshTray();
+  });
+
+  refreshTray();
+})();
+</script>
 
 </body>
 </html>
