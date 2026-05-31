@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="robots" content="noindex,nofollow">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Meal Plan — Shopping List</title>
@@ -142,7 +141,7 @@
 
     var costs = window.RECIPE_COST || {};
     var totalCost = week.reduce(function(s, id){ return s + (costs[id] || 0) * counts[id]; }, 0);
-    var totalMeals = week.reduce(function(s, id){ return s + counts[id]; }, 0);
+    var totalMeals = week.reduce(function(s, id){ return s + ((window.NOT_MEAL && window.NOT_MEAL[id]) ? 0 : counts[id]); }, 0);
     var target = getTarget();
 
     var html = '';

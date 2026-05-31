@@ -237,7 +237,33 @@ window.RECIPES = {
     { item: "Garlic powder", qty: 1, unit: "tsp", store: "publix", staple: true },
     { item: "Onion powder", qty: 1, unit: "tsp", store: "publix", staple: true },
     { item: "Ground mustard", qty: 0.25, unit: "tsp", store: "publix", staple: true }
-  ]}
+  ]},
+
+  // --- Quick proteins & staples (single item, cook-your-own — no recipe needed) ---
+  "staple-salmon":         { name: "Salmon fillet",        ingredients: [{ item: "Salmon fillets (wild)", qty: 1, unit: "(6oz)", store: "costco" }] },
+  "staple-ribeye":         { name: "Ribeye steak",         ingredients: [{ item: "Ribeye steak", qty: 1, unit: "", store: "costco" }] },
+  "staple-nystrip":        { name: "NY strip steak",       ingredients: [{ item: "NY strip steak", qty: 1, unit: "", store: "costco" }] },
+  "staple-sirloin":        { name: "Sirloin steak",        ingredients: [{ item: "Sirloin steak", qty: 1, unit: "", store: "costco" }] },
+  "staple-chicken-thighs": { name: "Chicken thighs",       ingredients: [{ item: "Chicken thighs (bone-in)", qty: 1, unit: "lb", store: "costco" }] },
+  "staple-chicken-breast": { name: "Chicken breast",       ingredients: [{ item: "Chicken breasts", qty: 1, unit: "lb", store: "costco" }] },
+  "staple-ground-beef":    { name: "Ground beef",          ingredients: [{ item: "Ground beef (80/20)", qty: 1, unit: "lb", store: "costco" }] },
+  "staple-venison":        { name: "Venison (have it)",    ingredients: [{ item: "Venison", qty: 1, unit: "lb", store: "publix" }] },
+  "staple-pork-chops":     { name: "Pork chops",           ingredients: [{ item: "Pork chops", qty: 2, unit: "", store: "costco" }] },
+  "staple-sausage":        { name: "Sausage",              ingredients: [{ item: "Sausage (sugar-free)", qty: 1, unit: "pack", store: "publix" }] },
+  "staple-bacon":          { name: "Bacon",                ingredients: [{ item: "Bacon (sugar-free)", qty: 1, unit: "pack", store: "costco" }] },
+  "staple-eggs":           { name: "Eggs",                 ingredients: [{ item: "Eggs", qty: 12, unit: "", store: "costco" }] },
+  "staple-shrimp":         { name: "Shrimp",               ingredients: [{ item: "Shrimp (large)", qty: 1, unit: "lb", store: "costco" }] },
+  "staple-sardines":       { name: "Canned sardines",      ingredients: [{ item: "Sardines (in olive oil)", qty: 2, unit: "tins", store: "publix" }] },
+  "staple-avocado":        { name: "Avocado",              ingredients: [{ item: "Avocados", qty: 1, unit: "", store: "publix" }] },
+  "staple-spinach":        { name: "Spinach / greens",     ingredients: [{ item: "Spinach", qty: 1, unit: "bag", store: "publix" }] },
+  "staple-broccoli":       { name: "Broccoli",             ingredients: [{ item: "Broccoli", qty: 1, unit: "head", store: "publix" }] },
+  "staple-cauliflower":    { name: "Cauliflower",          ingredients: [{ item: "Cauliflower", qty: 1, unit: "head", store: "publix" }] },
+  "staple-asparagus":      { name: "Asparagus",            ingredients: [{ item: "Asparagus", qty: 1, unit: "bunch", store: "publix" }] },
+  "staple-brussels":       { name: "Brussels sprouts",     ingredients: [{ item: "Brussels sprouts", qty: 1, unit: "lb", store: "publix" }] },
+  "staple-green-beans":    { name: "Green beans",          ingredients: [{ item: "Green beans", qty: 1, unit: "bag", store: "publix" }] },
+  "staple-butter":         { name: "Butter",               ingredients: [{ item: "Butter (grass-fed)", qty: 1, unit: "lb", store: "costco" }] },
+  "staple-cheese":         { name: "Block cheese",         ingredients: [{ item: "Cheddar (block)", qty: 1, unit: "8oz", store: "costco" }] },
+  "staple-avocado-oil":    { name: "Avocado oil",          ingredients: [{ item: "Avocado oil", qty: 1, unit: "bottle", store: "costco" }] }
 
 };
 
@@ -265,7 +291,22 @@ window.RECIPE_COST = {
   "keto-ketchup": 2,
   "ranch-dressing": 4,
   "caesar-dressing": 5,
-  "bbq-sauce": 2
+  "bbq-sauce": 2,
+  "staple-salmon": 8, "staple-ribeye": 12, "staple-nystrip": 10, "staple-sirloin": 7,
+  "staple-chicken-thighs": 5, "staple-chicken-breast": 6, "staple-ground-beef": 6,
+  "staple-venison": 0, "staple-pork-chops": 6, "staple-sausage": 6, "staple-bacon": 7,
+  "staple-eggs": 4, "staple-shrimp": 11, "staple-sardines": 4, "staple-avocado": 1,
+  "staple-spinach": 3, "staple-broccoli": 3, "staple-cauliflower": 3, "staple-asparagus": 4,
+  "staple-brussels": 4, "staple-green-beans": 3, "staple-butter": 5, "staple-cheese": 4,
+  "staple-avocado-oil": 9
+};
+
+/* Items that go on the shopping list but should NOT count as a "meal"
+ * toward the weekly meal target (sides, fats, condiments). */
+window.NOT_MEAL = {
+  "staple-avocado": 1, "staple-spinach": 1, "staple-broccoli": 1, "staple-cauliflower": 1,
+  "staple-asparagus": 1, "staple-brussels": 1, "staple-green-beans": 1,
+  "staple-butter": 1, "staple-cheese": 1, "staple-avocado-oil": 1
 };
 
 /* Meal-plan storage = { recipeId: count }. Migrate the old array form, drop any

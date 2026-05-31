@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="robots" content="noindex,nofollow">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keto Recipe Cookbook — Keto Protocol</title>
@@ -118,6 +117,36 @@
 <h2>Plan Your Week</h2>
 <div class="section-intro">
   Use the <strong>+ / −</strong> stepper next to each recipe to set how many times you'll make it (e.g. pancakes ×4). The bar at the bottom counts your <strong>meals toward your weekly target</strong> (default 21 = 3/day — tap the number to change it) and totals the cost. Hit <strong>"Build →"</strong> for the shopping list, scaled to your quantities. <a href="meal-plan-list.html">View current list →</a>
+</div>
+
+<h2>Quick Proteins &amp; Staples — no recipe needed</h2>
+<div class="section-intro">Not cooking a full recipe? Add a plain protein (air-fryer salmon, a steak, eggs) or a side/staple straight to your list with the same stepper. <strong>Proteins count as meals</strong>; sides &amp; fats just go on the shopping list.</div>
+<div class="recipe-list">
+  <div class="header-row"><div>Item</div><div>Type</div><div></div><div></div><div></div><div>Cost</div></div>
+  <a class="recipe" data-id="staple-salmon"><div class="recipe-name">Salmon fillet</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-ribeye"><div class="recipe-name">Ribeye steak</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-nystrip"><div class="recipe-name">NY strip steak</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-sirloin"><div class="recipe-name">Sirloin steak</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-chicken-thighs"><div class="recipe-name">Chicken thighs</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-chicken-breast"><div class="recipe-name">Chicken breast</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-ground-beef"><div class="recipe-name">Ground beef</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-venison"><div class="recipe-name">Venison (you have it)</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-pork-chops"><div class="recipe-name">Pork chops</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-sausage"><div class="recipe-name">Sausage</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-bacon"><div class="recipe-name">Bacon</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-eggs"><div class="recipe-name">Eggs (dozen)</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-shrimp"><div class="recipe-name">Shrimp</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-sardines"><div class="recipe-name">Canned sardines</div><div class="recipe-meal">Protein</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-avocado"><div class="recipe-name">Avocado</div><div class="recipe-meal">Side/Fat</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-spinach"><div class="recipe-name">Spinach / greens</div><div class="recipe-meal">Side</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-broccoli"><div class="recipe-name">Broccoli</div><div class="recipe-meal">Side</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-cauliflower"><div class="recipe-name">Cauliflower</div><div class="recipe-meal">Side</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-asparagus"><div class="recipe-name">Asparagus</div><div class="recipe-meal">Side</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-brussels"><div class="recipe-name">Brussels sprouts</div><div class="recipe-meal">Side</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-green-beans"><div class="recipe-name">Green beans</div><div class="recipe-meal">Side</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-butter"><div class="recipe-name">Butter</div><div class="recipe-meal">Fat</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-cheese"><div class="recipe-name">Block cheese</div><div class="recipe-meal">Fat</div><div></div><div></div><div></div></a>
+  <a class="recipe" data-id="staple-avocado-oil"><div class="recipe-name">Avocado oil</div><div class="recipe-meal">Fat</div><div></div><div></div><div></div></a>
 </div>
 
 <h2>Meal 1 — Post-WOD (largest meal)</h2>
@@ -350,7 +379,8 @@
   targetInput.value = getTarget();
 
   function idFromHref(href) { return (href || '').replace(/^.*\//, '').replace(/\.html.*$/, ''); }
-  function totalMeals(c) { return Object.keys(c).reduce(function(s, id){ return s + c[id]; }, 0); }
+  function isMeal(id) { return !(window.NOT_MEAL && window.NOT_MEAL[id]); }
+  function totalMeals(c) { return Object.keys(c).reduce(function(s, id){ return s + (isMeal(id) ? c[id] : 0); }, 0); }
   function totalCost(c) { var costs = window.RECIPE_COST || {}; return Object.keys(c).reduce(function(s, id){ return s + (costs[id] || 0) * c[id]; }, 0); }
 
   function refreshTray() {
@@ -364,7 +394,7 @@
   }
 
   document.querySelectorAll('a.recipe').forEach(function(a) {
-    var id = idFromHref(a.getAttribute('href'));
+    var id = a.dataset.id || idFromHref(a.getAttribute('href'));
     if (!id) return;
     var cost = (window.RECIPE_COST || {})[id];
     var costCell = document.createElement('div');
