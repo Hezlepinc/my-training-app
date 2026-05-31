@@ -424,17 +424,13 @@
 
   buildMilestones();
 
-  // One-time preset: stage tonight's fast at 7:00 PM local if nothing is set yet.
-  // It counts down to 7pm then auto-begins. Runs only once (flag), so it won't
-  // surprise you on later days — after that the input just defaults to 7pm.
+  // If no fast is set, just default the start picker to 7:00 PM local.
+  // Nothing auto-starts — each person taps "Set Start" when they're ready,
+  // so anyone opening the app fresh sees a clean "no fast running" state.
   if (!getStart()) {
     var d = new Date();
-    d.setHours(19, 0, 0, 0);   // 7:00 PM local
+    d.setHours(19, 0, 0, 0);
     startInput.value = toLocalInputValue(d.getTime());
-    if (!localStorage.getItem('preset-tonight') && Date.now() < d.getTime() + 6 * 3600000) {
-      setStart(d.getTime());   // pre-set the fast for tonight
-    }
-    localStorage.setItem('preset-tonight', '1');
   }
 
   document.getElementById('set-start').addEventListener('click', function() {

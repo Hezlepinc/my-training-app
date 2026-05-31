@@ -17,6 +17,10 @@
   .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
   .chip { font-size: 0.66rem; font-weight: 700; padding: 5px 11px; border-radius: 14px; background: #14141a; border: 1px solid #2a2a33; color: #999; cursor: pointer; }
   .chip.on { background: #1a4a2a; border-color: #2a8a52; color: #8ce0a8; }
+  .eq-row { margin-top: 12px; }
+  .eq-label { font-size: 0.64rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #888; margin-bottom: 6px; }
+  .eq-hint { font-weight: 500; text-transform: none; letter-spacing: 0; color: #555; }
+  #eq-chips .chip.on { background: #16323f; border-color: #2a6a8a; color: #8cc8e0; }
   .cat-h { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #5a8aaa; margin: 18px 0 8px; }
   .move { background: #131318; border: 1px solid #1e1e26; border-radius: 10px; padding: 12px 14px; margin-bottom: 7px; }
   .m-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -39,6 +43,10 @@
 
 <div class="search">
   <input id="q" type="search" placeholder="Search movements… (e.g. squat, clean, pull-up)" autocomplete="off">
+  <div class="eq-row">
+    <div class="eq-label">Equipment you have <span class="eq-hint">(tap to toggle — hides what you can't do)</span></div>
+    <div class="chips" id="eq-chips"></div>
+  </div>
   <div class="chips" id="chips"></div>
 </div>
 <div id="list"></div>
@@ -90,11 +98,45 @@
     ["Sit-up","Core","Full range, hands overhead to toes, controlled.","Crunch; anchor feet."]
   ];
 
+  // Equipment each movement needs — having ANY one listed lets you do it.
+  // 'Bodyweight' means no equipment (always available).
+  var EQUIP = {
+    "Back Squat":["Barbell"], "Front Squat":["Barbell"], "Deadlift":["Barbell"],
+    "Romanian Deadlift":["Barbell","Dumbbells"], "Bulgarian Split Squat":["Bodyweight","Dumbbells"],
+    "Walking Lunge":["Bodyweight","Dumbbells"], "Bench Press":["Barbell"], "Overhead Press":["Barbell"],
+    "DB Shoulder Press":["Dumbbells"], "Push Press":["Barbell","Dumbbells"], "Push-up":["Bodyweight"],
+    "Dips":["Bodyweight"], "Pull-up":["Pull-up bar"], "DB Row":["Dumbbells"],
+    "Bent-over Row":["Barbell","Dumbbells"], "Face Pull":["Band"], "Power Clean":["Barbell"],
+    "Hang Clean":["Barbell"], "Push Jerk":["Barbell"], "Snatch":["Barbell"], "Overhead Squat":["Barbell"],
+    "Thruster":["Barbell","Dumbbells"], "Row (erg)":["Rower"], "Run":["Bodyweight"],
+    "Double-unders":["Jump rope"], "Box Jump":["Plyo box"], "Kettlebell Swing":["Kettlebell","Dumbbells"],
+    "Slam Ball":["Slam ball"], "Wall Ball":["Wall ball"], "Burpee":["Bodyweight"], "Plank":["Bodyweight"],
+    "Hollow Hold":["Bodyweight"], "Hanging Knee Raise":["Pull-up bar"], "Sit-up":["Bodyweight"]
+  };
+  var EQUIP_LIST = ["Barbell","Dumbbells","Pull-up bar","Kettlebell","Plyo box","Slam ball","Jump rope","Rower","Wall ball","Band"];
+  function loadEquip() { try { var s = JSON.parse(localStorage.getItem('lib-equipment')||'null'); if (s) return s; } catch(e){} var o={}; EQUIP_LIST.forEach(function(e){ o[e]=true; }); return o; }
+  function saveEquip() { localStorage.setItem('lib-equipment', JSON.stringify(selEquip)); }
+  var selEquip = loadEquip();
+  function canDo(name) {
+    var req = EQUIP[name] || ["Bodyweight"];
+    if (req.indexOf("Bodyweight") !== -1) return true;
+    return req.some(function(e){ return selEquip[e]; });
+  }
+
   var CATS = ["Lower","Push","Pull","Olympic","Conditioning","Core"];
   var activeCat = '';
   var listEl = document.getElementById('list');
   var qEl = document.getElementById('q');
   var chipsEl = document.getElementById('chips');
+  var eqChipsEl = document.getElementById('eq-chips');
+
+  EQUIP_LIST.forEach(function(e) {
+    var b = document.createElement('button'); b.className = 'chip' + (selEquip[e] ? ' on' : ''); b.textContent = e;
+    b.addEventListener('click', function() {
+      selEquip[e] = !selEquip[e]; b.classList.toggle('on', selEquip[e]); saveEquip(); render();
+    });
+    eqChipsEl.appendChild(b);
+  });
 
   CATS.forEach(function(c) {
     var b = document.createElement('button'); b.className = 'chip'; b.textContent = c;
@@ -112,6 +154,7 @@
     MOVES.forEach(function(m) {
       if (activeCat && m[1] !== activeCat) return;
       if (filter && m[0].toLowerCase().indexOf(filter) === -1) return;
+      if (!canDo(m[0])) return;
       if (!byCat[m[1]]) { byCat[m[1]] = []; order.push(m[1]); }
       byCat[m[1]].push(m);
     });
