@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Macro & TDEE Calculator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d0d0f; color: #e8e8e8; padding: 20px; max-width: 680px; margin: 0 auto; padding-bottom: 50px; }
+  a.back { font-size: 0.75rem; color: #6ad08a; text-decoration: none; }
+  header { text-align: center; margin: 8px 0 18px; }
+  h1 { font-size: 1.3rem; font-weight: 800; color: #fff; }
+  .subtitle { font-size: 0.75rem; color: #666; margin-top: 4px; }
+  h2 { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.14em; color: #666; margin: 26px 0 12px; padding-bottom: 6px; border-bottom: 1px solid #1e1e26; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { background: #131318; border: 1px solid #1e1e26; border-radius: 9px; padding: 10px 12px; }
+  .field label { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #888; display: block; margin-bottom: 5px; }
+  .field input, .field select { width: 100%; background: #0a0a0d; border: 1px solid #2a2a33; color: #fff; border-radius: 6px; padding: 8px 10px; font-size: 0.95rem; font-family: inherit; }
+  .row2 { display: flex; gap: 8px; }
+  .row2 > div { flex: 1; }
+  .results { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px; }
+  .rc { background: #131318; border: 1px solid #1e1e26; border-radius: 10px; padding: 14px 8px; text-align: center; }
+  .rc .n { font-size: 1.6rem; font-weight: 800; line-height: 1; }
+  .rc .u { font-size: 0.6rem; color: #777; margin-top: 3px; }
+  .rc .l { font-size: 0.62rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-top: 7px; }
+  .cal .n { color: #fff; } .fat .n { color: #e0b040; } .pro .n { color: #5ad080; } .carb .n { color: #9a9ac8; }
+  .tdee-line { background: #11160f; border-left: 4px solid #2a9a5a; border-radius: 0 8px 8px 0; padding: 12px 15px; margin-top: 12px; font-size: 0.85rem; color: #cbd; line-height: 1.6; }
+  .tdee-line b { color: #6ad08a; }
+  .note { font-size: 0.72rem; color: #777; margin-top: 10px; line-height: 1.5; }
+  .onerm-out { display: flex; align-items: baseline; gap: 10px; background: #131318; border: 1px solid #1e1e26; border-radius: 10px; padding: 14px; margin-top: 6px; }
+  .onerm-out .big { font-size: 1.8rem; font-weight: 800; color: #fff; }
+  .onerm-out .lbl { font-size: 0.72rem; color: #888; }
+  table.pct { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.82rem; }
+  table.pct td { padding: 6px 4px; border-bottom: 1px solid #1a1a20; color: #ccc; }
+  table.pct td:first-child { color: #888; font-weight: 700; }
+  table.pct td:last-child { text-align: right; font-weight: 700; color: #6ad08a; }
+  footer { margin-top: 26px; padding-top: 14px; border-top: 1px solid #1e1e26; font-size: 0.68rem; color: #555; text-align: center; line-height: 1.5; }
+</style>
+</head>
+<body>
+<a class="back" href="tools.html">← Tools</a>
+<header>
+  <h1>Macro & TDEE Calculator</h1>
+  <p class="subtitle">Mifflin–St Jeor · keto split · saves your inputs</p>
+</header>
+
+<h2>Your Stats</h2>
+<div class="grid">
+  <div class="field"><label>Sex</label><select id="sex"><option value="m">Male</option><option value="f">Female</option></select></div>
+  <div class="field"><label>Age</label><input id="age" type="number" min="14" max="99" value="40"></div>
+  <div class="field"><label>Height</label><div class="row2"><div><input id="ft" type="number" min="3" max="7" value="5" aria-label="feet"></div><div><input id="in" type="number" min="0" max="11" value="6" aria-label="inches"></div></div></div>
+  <div class="field"><label>Weight (lbs)</label><input id="wt" type="number" min="80" max="500" value="200"></div>
+  <div class="field"><label>Activity</label><select id="act">
+    <option value="1.2">Sedentary (desk)</option>
+    <option value="1.375">Light (1–3 days)</option>
+    <option value="1.55" selected>Moderate (3–5 days)</option>
+    <option value="1.725">Very active (6–7 days)</option>
+    <option value="1.9">Athlete (2x/day)</option>
+  </select></div>
+  <div class="field"><label>Goal</label><select id="goal">
+    <option value="0">Maintain</option>
+    <option value="250">Lose slow (−250)</option>
+    <option value="500" selected>Lose (−500)</option>
+    <option value="750">Lose fast (−750)</option>
+    <option value="-250">Gain lean (+250)</option>
+  </select></div>
+  <div class="field"><label>Net carbs (g/day)</label><input id="carbs" type="number" min="0" max="100" value="25"></div>
+  <div class="field"><label>Protein (g per lb body wt)</label><input id="ppl" type="number" min="0.4" max="1.5" step="0.05" value="0.8"></div>
+</div>
+
+<h2>Your Targets</h2>
+<div class="results">
+  <div class="rc cal"><div class="n" id="r-cal">—</div><div class="u">kcal</div><div class="l">Calories</div></div>
+  <div class="rc fat"><div class="n" id="r-fat">—</div><div class="u">grams</div><div class="l">Fat</div></div>
+  <div class="rc pro"><div class="n" id="r-pro">—</div><div class="u">grams</div><div class="l">Protein</div></div>
+  <div class="rc carb"><div class="n" id="r-carb">—</div><div class="u">net g</div><div class="l">Carbs</div></div>
+</div>
+<div class="tdee-line" id="tdee-line"></div>
+<div class="note">Protein defaults to 0.8 g/lb body weight (muscle-preserving in a deficit). Carbs are capped low for keto; fat fills the rest of your calories. Adjust any input and the targets update live.</div>
+
+<h2>1-Rep Max Calculator</h2>
+<div class="grid">
+  <div class="field"><label>Weight lifted (lbs)</label><input id="orm-w" type="number" min="0" value="135"></div>
+  <div class="field"><label>Reps performed</label><input id="orm-r" type="number" min="1" max="15" value="5"></div>
+</div>
+<div class="onerm-out"><span class="big" id="orm-out">—</span><span class="lbl">estimated 1RM (Epley)</span></div>
+<table class="pct" id="orm-table"></table>
+
+<footer>Estimates only — adjust to how you actually feel and perform. Not medical advice.</footer>
+
+<script>
+(function() {
+  var KEY = 'macro-calc-inputs';
+  var ids = ['sex','age','ft','in','wt','act','goal','carbs','ppl','orm-w','orm-r'];
+  function save() { var o={}; ids.forEach(function(id){ o[id]=document.getElementById(id).value; }); localStorage.setItem(KEY, JSON.stringify(o)); }
+  function load() { try { var o=JSON.parse(localStorage.getItem(KEY)||'{}'); ids.forEach(function(id){ if(o[id]!=null) document.getElementById(id).value=o[id]; }); } catch(e){} }
+
+  function val(id){ return parseFloat(document.getElementById(id).value) || 0; }
+
+  function calcMacros() {
+    var sex = document.getElementById('sex').value;
+    var age = val('age'), wt = val('wt');
+    var inches = val('ft')*12 + val('in');
+    var kg = wt / 2.2046, cm = inches * 2.54;
+    var bmr = 10*kg + 6.25*cm - 5*age + (sex==='m' ? 5 : -161);
+    var tdee = bmr * val('act');
+    var target = Math.max(1000, Math.round(tdee - val('goal')));
+    var carbs = val('carbs');
+    var protein = Math.round(val('ppl') * wt);
+    var fatCals = target - (protein*4) - (carbs*4);
+    var fat = Math.max(0, Math.round(fatCals / 9));
+
+    document.getElementById('r-cal').textContent = target;
+    document.getElementById('r-fat').textContent = fat;
+    document.getElementById('r-pro').textContent = protein;
+    document.getElementById('r-carb').textContent = carbs;
+
+    var fp = Math.round(fat*9/target*100), pp = Math.round(protein*4/target*100), cp = Math.round(carbs*4/target*100);
+    document.getElementById('tdee-line').innerHTML =
+      'BMR <b>' + Math.round(bmr) + '</b> · maintenance (TDEE) <b>' + Math.round(tdee) + '</b> · target <b>' + target + '</b> kcal/day' +
+      '<br>Split ≈ <b>' + fp + '% fat / ' + pp + '% protein / ' + cp + '% carbs</b>';
+  }
+
+  function calcORM() {
+    var w = val('orm-w'), r = val('orm-r');
+    var orm = (r === 1) ? w : Math.round(w * (1 + r/30));   // Epley
+    document.getElementById('orm-out').textContent = orm ? (orm + ' lbs') : '—';
+    var pcts = [100,95,90,85,80,75,70,65,60];
+    var html = '';
+    pcts.forEach(function(p){ html += '<tr><td>' + p + '%</td><td>' + Math.round(orm*p/100) + ' lbs</td></tr>'; });
+    document.getElementById('orm-table').innerHTML = html;
+  }
+
+  function update(){ calcMacros(); calcORM(); save(); }
+
+  load();
+  ids.forEach(function(id){ document.getElementById(id).addEventListener('input', update); });
+  update();
+})();
+</script>
+</body>
+</html>

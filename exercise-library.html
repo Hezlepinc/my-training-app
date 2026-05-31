@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex,nofollow">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercise Library</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d0d0f; color: #e8e8e8; padding: 20px; max-width: 720px; margin: 0 auto; padding-bottom: 50px; }
+  a.back { font-size: 0.75rem; color: #6ad08a; text-decoration: none; }
+  header { text-align: center; margin: 8px 0 14px; }
+  h1 { font-size: 1.3rem; font-weight: 800; color: #fff; }
+  .subtitle { font-size: 0.75rem; color: #666; margin-top: 4px; }
+  .search { position: sticky; top: 0; background: #0d0d0f; padding: 8px 0 8px; z-index: 10; }
+  .search input { width: 100%; background: #131318; border: 1px solid #2a2a33; color: #fff; border-radius: 9px; padding: 11px 14px; font-size: 0.95rem; font-family: inherit; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .chip { font-size: 0.66rem; font-weight: 700; padding: 5px 11px; border-radius: 14px; background: #14141a; border: 1px solid #2a2a33; color: #999; cursor: pointer; }
+  .chip.on { background: #1a4a2a; border-color: #2a8a52; color: #8ce0a8; }
+  .cat-h { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #5a8aaa; margin: 18px 0 8px; }
+  .move { background: #131318; border: 1px solid #1e1e26; border-radius: 10px; padding: 12px 14px; margin-bottom: 7px; }
+  .m-name { font-size: 0.95rem; font-weight: 700; color: #eee; }
+  .m-cue { font-size: 0.82rem; color: #c5ccd2; margin-top: 4px; line-height: 1.45; }
+  .m-scale { font-size: 0.76rem; color: #8a9; margin-top: 6px; line-height: 1.4; }
+  .m-scale b { color: #6ad08a; font-weight: 700; }
+  .empty { text-align: center; color: #666; padding: 30px; font-size: 0.85rem; }
+  footer { margin-top: 24px; padding-top: 14px; border-top: 1px solid #1e1e26; font-size: 0.66rem; color: #555; text-align: center; line-height: 1.5; }
+</style>
+</head>
+<body>
+<a class="back" href="tools.html">← Tools</a>
+<header>
+  <h1>Exercise Library</h1>
+  <p class="subtitle">Form cues + how to scale · search or filter by group</p>
+</header>
+
+<div class="search">
+  <input id="q" type="search" placeholder="Search movements… (e.g. squat, clean, pull-up)" autocomplete="off">
+  <div class="chips" id="chips"></div>
+</div>
+<div id="list"></div>
+
+<footer>Cues are reminders, not a substitute for coaching. Start light, nail the pattern, then load.</footer>
+
+<script>
+(function() {
+  // [name, category, cue, scale]
+  var MOVES = [
+    ["Back Squat","Lower","Bar on traps, brace hard, hips back & down, knees track toes, drive up through mid-foot.","Box squat to depth, or goblet squat with a DB."],
+    ["Front Squat","Lower","Bar on front shoulders, elbows high, stay upright, squat between the knees.","Goblet squat; work on rack mobility."],
+    ["Deadlift","Lower","Bar over mid-foot, flat back, take slack out, push the floor away, lock hips.","Trap-bar or kettlebell deadlift; reduce range to blocks."],
+    ["Romanian Deadlift","Lower","Soft knees, hinge hips back, bar stays close, feel hamstring stretch, stand tall.","Dumbbells; shorten the range."],
+    ["Bulgarian Split Squat","Lower","Rear foot on bench, drop straight down, front knee over mid-foot, drive up.","Bodyweight; hold a rail for balance."],
+    ["Walking Lunge","Lower","Long step, back knee toward floor, push through front heel.","Bodyweight; shorter steps; reverse lunge."],
+
+    ["Bench Press","Push","Shoulder blades pinched & down, bar to lower chest, drive up and slightly back.","DB bench press, or push-ups."],
+    ["Overhead Press","Push","Brace ribs down, bar from shoulders straight up, push head 'through' at top.","Seated DB press; lighter load."],
+    ["DB Shoulder Press","Push","Press DBs overhead, don't flare elbows, ribs down.","Lighter DBs; seated."],
+    ["Push Press","Push","Quick dip-drive with the legs, then press overhead.","Strict press lighter; sub DBs."],
+    ["Push-up","Push","Plank-tight, elbows ~45°, chest to floor, full lockout.","Knees, or hands on a box/incline."],
+    ["Dips","Push","Lean slightly forward, lower to ~90°, press to lockout.","Bench dips; band assistance."],
+
+    ["Pull-up","Pull","Dead hang, pull chest to bar, control the descent.","Banded, jumping pull-ups, negatives, or ring rows."],
+    ["DB Row","Pull","Flat back, row DB to hip, squeeze, control down.","Lighter; chest-supported on a bench."],
+    ["Bent-over Row","Pull","Hinge ~45°, flat back, row bar to belly, elbows back.","Dumbbells; reduce load."],
+    ["Face Pull","Pull","Pull toward the face, elbows high, squeeze rear delts.","Band; lighter."],
+
+    ["Power Clean","Olympic","Bar from floor, explode hips, shrug & pull under, catch on shoulders.","Hang power clean or DB clean."],
+    ["Hang Clean","Olympic","From above the knee, jump-shrug, pull elbows under fast.","Lighter; from the high hang."],
+    ["Push Jerk","Olympic","Dip, drive, drop under and catch in a partial squat, stand.","Push press instead."],
+    ["Snatch","Olympic","Wide grip, floor to overhead in one motion, catch in a squat.","Hang power snatch; single-DB snatch."],
+    ["Overhead Squat","Olympic","Snatch grip locked overhead, active shoulders, squat with bar over mid-foot.","PVC pipe; master front squat & mobility first."],
+    ["Thruster","Olympic","Front squat, then ride the drive straight into a push press.","Lighter bar or dumbbells."],
+
+    ["Row (erg)","Conditioning","Drive legs, then hips, then arms; return arms, hips, legs.","Lower damper; sub bike or run."],
+    ["Run","Conditioning","Tall posture, mid-foot strike, relaxed arms, breathe steady.","Walk/run intervals."],
+    ["Double-unders","Conditioning","Small jump, fast wrist turn, rope passes twice per jump.","Single-unders, or practice 10 at a time."],
+    ["Box Jump","Conditioning","Hips back, jump, soft quiet landing, stand to full extension on top.","Step-ups, or a lower box."],
+    ["Kettlebell Swing","Conditioning","Hinge, snap the hips, bell floats to eye level, arms relaxed.","Lighter bell; swing to chest height."],
+    ["Slam Ball","Conditioning","Overhead, slam down hard, hinge to catch the bounce.","Lighter ball."],
+    ["Wall Ball","Conditioning","Squat, drive up and throw to the target, catch in the next squat.","Lighter ball; lower target."],
+    ["Burpee","Conditioning","Chest to floor, jump feet in, stand and jump with a clap.","Step back/up; skip the jump."],
+
+    ["Plank","Core","Straight line head-to-heels, brace abs, squeeze glutes.","Drop to knees; shorter holds."],
+    ["Hollow Hold","Core","Low back pressed to floor, arms & legs extended and off the ground.","Tuck knees / arms by sides."],
+    ["Hanging Knee Raise","Core","Hang, raise knees to chest, control down, no swinging.","Lying leg raises."],
+    ["Sit-up","Core","Full range, hands overhead to toes, controlled.","Crunch; anchor feet."]
+  ];
+
+  var CATS = ["Lower","Push","Pull","Olympic","Conditioning","Core"];
+  var activeCat = '';
+  var listEl = document.getElementById('list');
+  var qEl = document.getElementById('q');
+  var chipsEl = document.getElementById('chips');
+
+  CATS.forEach(function(c) {
+    var b = document.createElement('button'); b.className = 'chip'; b.textContent = c;
+    b.addEventListener('click', function() {
+      activeCat = (activeCat === c) ? '' : c;
+      Array.prototype.forEach.call(chipsEl.children, function(ch){ ch.classList.toggle('on', ch.textContent === activeCat); });
+      render();
+    });
+    chipsEl.appendChild(b);
+  });
+
+  function render() {
+    var filter = (qEl.value || '').toLowerCase().trim();
+    var byCat = {}, order = [];
+    MOVES.forEach(function(m) {
+      if (activeCat && m[1] !== activeCat) return;
+      if (filter && m[0].toLowerCase().indexOf(filter) === -1) return;
+      if (!byCat[m[1]]) { byCat[m[1]] = []; order.push(m[1]); }
+      byCat[m[1]].push(m);
+    });
+    if (!order.length) { listEl.innerHTML = '<div class="empty">No movements match.</div>'; return; }
+    var html = '';
+    order.forEach(function(cat) {
+      html += '<div class="cat-h">' + cat + '</div>';
+      byCat[cat].forEach(function(m) {
+        html += '<div class="move"><div class="m-name">' + m[0] + '</div>' +
+          '<div class="m-cue">' + m[2] + '</div>' +
+          '<div class="m-scale"><b>Scale:</b> ' + m[3] + '</div></div>';
+      });
+    });
+    listEl.innerHTML = html;
+  }
+
+  qEl.addEventListener('input', render);
+  render();
+})();
+</script>
+</body>
+</html>
