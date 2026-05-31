@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="robots" content="noindex,nofollow">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fast Tracker — Live</title>
@@ -111,6 +110,14 @@
   footer a { color: #777; text-decoration: none; }
 
   .disclaimer { font-size: 0.68rem; color: #666; background: #14140a; border: 1px solid #2a2a1a; border-radius: 8px; padding: 12px; margin-top: 16px; line-height: 1.5; }
+
+  .ms-banner { display: none; align-items: flex-start; gap: 12px; background: linear-gradient(135deg,#143a26,#0f2a1c); border: 1px solid #2a6a45; border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; }
+  .ms-banner.show { display: flex; }
+  .ms-banner .mb-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .ms-banner .mb-body { flex: 1; }
+  .ms-banner .mb-title { font-size: 0.9rem; font-weight: 800; color: #7ad89a; }
+  .ms-banner .mb-detail { font-size: 0.76rem; color: #aaccb5; margin-top: 3px; line-height: 1.45; }
+  .ms-banner .mb-dismiss { background: rgba(255,255,255,0.1); border: none; color: #cfe; width: 26px; height: 26px; border-radius: 50%; font-size: 1rem; cursor: pointer; flex-shrink: 0; font-family: inherit; }
 </style>
 </head>
 <body>
@@ -118,6 +125,19 @@
 <header>
   <h1>Fast Tracker</h1>
   <p class="subtitle">DeLauer extended-fast protocol · Live timer</p>
+</header>
+
+<div class="ms-banner" id="ms-banner">
+  <span class="mb-icon" id="mb-icon">🎯</span>
+  <div class="mb-body">
+    <div class="mb-title" id="mb-title"></div>
+    <div class="mb-detail" id="mb-detail"></div>
+  </div>
+  <button class="mb-dismiss" id="mb-dismiss" aria-label="Dismiss">×</button>
+</div>
+
+<header style="display:none">
+  <!-- spacer -->
 </header>
 
 <div class="timer-card">
@@ -197,6 +217,7 @@
 (function() {
   var KEY_START = 'fast-start-time';
   var KEY_ELEC = 'fast-elec-state';
+  var KEY_ACK = 'fast-last-milestone';
 
   var MILESTONES = [
     { h: 0,  label: 'Fast begins', detail: 'Last bite of food. Start water + electrolytes.' },
@@ -220,7 +241,23 @@
   }
   function setStart(ms) {
     localStorage.setItem(KEY_START, String(ms));
+    localStorage.setItem(KEY_ACK, '0'); // re-arm milestone banners for the new fast
     render();
+  }
+
+  function checkMilestone(elapsedH) {
+    var banner = document.getElementById('ms-banner');
+    var passedIdx = 0;
+    MILESTONES.forEach(function(m, i){ if (elapsedH >= m.h) passedIdx = i; });
+    var ack = parseInt(localStorage.getItem(KEY_ACK) || '0', 10);
+    if (passedIdx > ack) {
+      var m = MILESTONES[passedIdx];
+      document.getElementById('mb-icon').textContent = m.decision ? '⚖️' : '🎯';
+      document.getElementById('mb-title').textContent = m.h + ' hours reached — ' + m.label;
+      document.getElementById('mb-detail').textContent = m.detail;
+      banner.dataset.idx = passedIdx;
+      banner.classList.add('show');
+    }
   }
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -291,6 +328,7 @@
       else { phase = 'Peak Autophagy'; cls = 'phase-peak'; }
       phaseEl.textContent = phase + ' · ' + (Math.round(elapsedH*10)/10) + 'h';
       phaseEl.className = 'timer-phase ' + cls;
+      checkMilestone(elapsedH);
     }
     sinceEl.textContent = fmtSince(start);
 
@@ -341,8 +379,16 @@
   document.getElementById('reset-fast').addEventListener('click', function() {
     if (confirm('Clear the fast timer?')) {
       localStorage.removeItem(KEY_START);
+      localStorage.removeItem(KEY_ACK);
+      document.getElementById('ms-banner').classList.remove('show');
       render();
     }
+  });
+
+  document.getElementById('mb-dismiss').addEventListener('click', function() {
+    var banner = document.getElementById('ms-banner');
+    localStorage.setItem(KEY_ACK, banner.dataset.idx || '0');
+    banner.classList.remove('show');
   });
 
   // Electrolyte checkboxes

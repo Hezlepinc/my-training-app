@@ -4,7 +4,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Training — 6-Day Protocol</title>
+<title>Training — Modular Builder</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d0d0f; color: #e8e8e8; padding: 20px; max-width: 760px; margin: 0 auto; padding-bottom: 60px; }
@@ -33,27 +33,31 @@
   .day-card.open .chevron { transform: rotate(90deg); }
   .day-body { display: none; padding: 0 16px 16px; }
   .day-card.open .day-body { display: block; }
+
   .block { margin-top: 12px; }
   .block-label { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #5a8aaa; margin-bottom: 5px; }
   .block-body { font-size: 0.85rem; color: #ccc; line-height: 1.6; }
-  .block-body ul { list-style: none; margin-top: 2px; }
-  .block-body li { padding: 3px 0 3px 16px; position: relative; }
-  .block-body li::before { content: '–'; position: absolute; left: 0; color: #555; }
   .hr-tag { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 2px 9px; border-radius: 10px; margin-top: 8px; }
   .hr-z2 { background: #0f1f2a; color: #5aaae0; }
   .hr-z3 { background: #0f2a1a; color: #5ad080; }
   .hr-z45 { background: #2a1a0f; color: #e0903a; }
-  .scale-note { font-size: 0.74rem; color: #888; font-style: italic; margin-top: 8px; line-height: 1.5; }
+  .scale-note { font-size: 0.74rem; color: #888; font-style: italic; margin-top: 10px; line-height: 1.5; }
+
+  /* Modules + pick options */
+  .module { margin-top: 15px; }
+  .module-label { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #5a8aaa; margin-bottom: 6px; }
+  .opt { display: flex; align-items: center; gap: 10px; padding: 9px 12px; background: #0f0f13; border: 1px solid #20202a; border-radius: 8px; margin-bottom: 5px; cursor: pointer; font-size: 0.82rem; color: #ccc; line-height: 1.4; transition: all 0.12s; }
+  .opt:active { background: #161620; }
+  .opt.sel { background: #11251a; border-color: #2a8a52; color: #eafff0; }
+  .opt .pick { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #444; flex-shrink: 0; position: relative; }
+  .opt.sel .pick { background: #2a9a5a; border-color: #2a9a5a; }
+  .opt.sel .pick::after { content: ''; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .opt b { color: #6ad08a; font-weight: 700; }
+  .opt.sel b { color: #8ce0a8; }
+
   .bank-card { background: #131318; border: 1px solid #1e1e26; border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
   .bank-head { padding: 13px 16px; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 12px; }
   .bank-title { flex: 1; font-size: 0.9rem; font-weight: 700; color: #ddd; }
-  .bank-sub { font-size: 0.72rem; color: #666; margin-top: 1px; }
-  .bank-body { display: none; padding: 0 16px 14px; }
-  .bank-card.open .bank-body { display: block; }
-  .wod { border-bottom: 1px solid #1a1a20; padding: 10px 0; }
-  .wod:last-child { border-bottom: none; }
-  .wod-name { font-size: 0.84rem; font-weight: 700; color: #6ad08a; }
-  .wod-detail { font-size: 0.8rem; color: #bbb; line-height: 1.55; margin-top: 3px; }
   .info-card { background: #131318; border: 1px solid #1e1e26; border-radius: 10px; padding: 15px; font-size: 0.83rem; color: #bbb; line-height: 1.6; margin-bottom: 8px; }
   .info-card strong { color: #ddd; }
   .info-card .lbl { color: #6ad08a; font-weight: 700; }
@@ -69,11 +73,11 @@
 
 <header>
   <h1>Training</h1>
-  <p class="subtitle">6-day protocol · fixed structure, rotating content · keto fat-loss phase</p>
+  <p class="subtitle">6-day modular builder · pick your modules, structure stays fixed</p>
 </header>
 
 <div class="intro">
-  <strong>The whole idea:</strong> the 6 day-slots never change — that's your consistency. What rotates is the <em>content inside</em> each slot (which WOD, which run, which accessories). You never redesign the week; you pull the next variation from the movement bank. This is what makes it last for years. Tap a day to expand it. Tap the circle to mark it done this week.
+  <strong>How it works:</strong> the 6 day-slots never change. Inside each day, <strong>tap one option per module</strong> (A: squat, B: accessories…) to build that session — your picks are saved. Next week, swap picks for variety without ever redesigning the week. Tap a day to expand; tap the circle to mark it done.
 </div>
 
 <div class="legend">
@@ -85,165 +89,218 @@
 <h2>The Week</h2>
 <div class="week" id="week">
 
+  <!-- MONDAY -->
   <div class="day-card stress-mod" data-day="mon">
-    <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Monday</div><div class="day-title">Bodyweight</div><div class="day-focus">Engine + relative strength + joints</div></div><div class="chevron">▶</div><div class="day-check" data-check="mon"></div></div>
+    <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Monday</div><div class="day-title">Bodyweight</div><div class="day-focus">Engine + relative strength</div></div><div class="chevron">▶</div><div class="day-check" data-check="mon"></div></div>
     <div class="day-body">
-      <div class="block"><div class="block-label">Warm-up (8 min)</div><div class="block-body">Jump rope 3 min · then 2 rounds: 10 air squats, 10 push-ups, 10 walking lunges, 5 inchworms, arm circles + leg swings.</div></div>
-      <div class="block"><div class="block-label">Main (pick 1 from Mon bank)</div><div class="block-body">Bodyweight conditioning, 20–35 min. Cindy-style AMRAPs, EMOMs, or chippers. Pull from the <strong>Monday Bodyweight bank</strong> below — rotate weekly.</div><span class="hr-tag hr-z3">Target Zone 3–4 (steady, working but sustainable)</span></div>
-      <div class="block"><div class="block-label">Finisher (optional, 5 min)</div><div class="block-body">Plank ladder or hollow holds + superman. Core.</div></div>
-      <div class="scale-note">Scaling: sub jumping pull-ups or ring rows for strict; knee push-ups late in rounds; step-ups for box jumps. Walk to recover — that's pacing, not failure.</div>
+      <div class="block"><div class="block-label">Warm-up (8 min)</div><div class="block-body">Jump rope 3 min · 2 rounds: 10 air squats, 10 push-ups, 10 lunges, 5 inchworms.</div></div>
+      <div class="module" data-mod="mon-session"><div class="module-label">Pick a session</div>
+        <div class="opt"><div class="pick"></div><div><b>Murph</b> — 1 mi run · 100 pull-ups · 200 push-ups · 300 squats · 1 mi run (partition 20×[5/10/15], wear vest if able)</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Half Murph</b> — 800 m · 50 · 100 · 150 · 800 m</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Cindy</b> — 20 min AMRAP: 5 pull-ups, 10 push-ups, 15 air squats</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Mary (scaled)</b> — 20 min AMRAP: 3 wall-walks, 10 alt pistols, 15 pull-ups</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Chipper</b> — 50 squats, 40 lunges, 30 push-ups, 20 sit-ups, 10 burpees, 100 jump rope</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Tabata Mix</b> — 4 moves × 8 (20/10): squats, push-ups, mt. climbers, hollow rocks</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Ladder</b> — run 400 m, 10→1 push-ups + air squats, run 400 m</div></div>
+      </div>
+      <div class="module" data-mod="mon-scheme"><div class="module-label">Rep scheme (for scalable WODs)</div>
+        <div class="opt"><div class="pick"></div><div>21-15-9</div></div>
+        <div class="opt"><div class="pick"></div><div>10→1 descending ladder</div></div>
+        <div class="opt"><div class="pick"></div><div>5 rounds for time</div></div>
+        <div class="opt"><div class="pick"></div><div>EMOM (every min on the min)</div></div>
+        <div class="opt"><div class="pick"></div><div>AMRAP (as many rounds as possible)</div></div>
+      </div>
+      <div class="module" data-mod="mon-core"><div class="module-label">Finisher — core (optional)</div>
+        <div class="opt"><div class="pick"></div><div>Plank ladder (30-45-60s)</div></div>
+        <div class="opt"><div class="pick"></div><div>Hollow hold + superman 3×</div></div>
+        <div class="opt"><div class="pick"></div><div>Hanging knee raises 3×12</div></div>
+      </div>
+      <div class="scale-note">Scaling: jumping pull-ups / ring rows for strict, knee push-ups late, step-ups for box jumps. Walk to recover — that's pacing. Target Zone 3–4.</div>
     </div>
   </div>
 
+  <!-- TUESDAY -->
   <div class="day-card stress-high" data-day="tue">
-    <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Tuesday</div><div class="day-title">Lower — Squat Strength</div><div class="day-focus">Strength + legs/glutes · HIGH</div></div><div class="chevron">▶</div><div class="day-check" data-check="tue"></div></div>
+    <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Tuesday</div><div class="day-title">Lower — Squat Strength</div><div class="day-focus">Heavy. No oly/OHS here · HIGH</div></div><div class="chevron">▶</div><div class="day-check" data-check="tue"></div></div>
     <div class="day-body">
-      <div class="block"><div class="block-label">Warm-up</div><div class="block-body">5 min easy treadmill/row · empty bar 2×10, build in sets to working weight.</div></div>
-      <div class="block"><div class="block-label">Main lift — Back Squat (wave progression)</div><div class="block-body">
-        <ul>
-          <li><strong>Weeks 1–3:</strong> 5×5 @ ~70–75% 1RM (RPE 7) — add a little each week while bar speed stays crisp</li>
-          <li><strong>Heavy week:</strong> 4×4 @ ~80–85% (RPE 8)</li>
-          <li><strong>Back-off / deload:</strong> 3×5 @ ~65%, then restart the wave one notch higher</li>
-        </ul>
-        Pick a working weight where the last rep is solid — never a grind. Strength stimulus without redlining the engine.</div></div>
-      <div class="block"><div class="block-label">Accessories (hypertrophy — 8–15 reps)</div><div class="block-body">
-        <ul>
-          <li>Bulgarian split squats — 3×10/leg (DBs)</li>
-          <li>Romanian deadlifts — 3×10 (barbell, glutes/hams)</li>
-          <li>Walking lunges — 3×12/leg (DBs)</li>
-          <li>Calf raises — 3×15–20 (off plyo box edge)</li>
-        </ul>
-        8–15 rep range = the muscle-preserving / shaping zone in a deficit.</div></div>
-      <div class="scale-note">Fasted AM: if bar speed tanks during early adaptation, 5g BCAA pre-session helps. Drop to 4×3 if recovery is poor that week.</div>
+      <div class="block"><div class="block-label">Warm-up</div><div class="block-body">5 min easy treadmill/row · empty bar 2×10, build to working weight.</div></div>
+      <div class="module" data-mod="tue-a"><div class="module-label">A — Main squat (heavy strength)</div>
+        <div class="opt"><div class="pick"></div><div><b>Back Squat</b> 5×5 @ 70–75% (RPE 7)</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Front Squat</b> 4×6 @ 65–70%</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Box Squat</b> 5×3 @ 75–80%</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Tempo Back Squat</b> 4×5 (3s down)</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Pause Squat</b> 5×3 (2s in the hole)</div></div>
+      </div>
+      <div class="module" data-mod="tue-b"><div class="module-label">B — Unilateral</div>
+        <div class="opt"><div class="pick"></div><div>Bulgarian split squat 3×10/leg (DBs)</div></div>
+        <div class="opt"><div class="pick"></div><div>Walking lunge 3×12/leg (DBs)</div></div>
+        <div class="opt"><div class="pick"></div><div>DB step-up 3×10/leg (plyo box)</div></div>
+        <div class="opt"><div class="pick"></div><div>Reverse lunge 3×10/leg</div></div>
+      </div>
+      <div class="module" data-mod="tue-c"><div class="module-label">C — Posterior chain</div>
+        <div class="opt"><div class="pick"></div><div>Romanian deadlift 3×10</div></div>
+        <div class="opt"><div class="pick"></div><div>Good morning 3×10</div></div>
+        <div class="opt"><div class="pick"></div><div>DB hip thrust 3×12</div></div>
+        <div class="opt"><div class="pick"></div><div>KB/DB swing 4×15</div></div>
+      </div>
+      <div class="module" data-mod="tue-d"><div class="module-label">D — Calves + core</div>
+        <div class="opt"><div class="pick"></div><div>Calf raise 3×20 (box edge) + plank</div></div>
+        <div class="opt"><div class="pick"></div><div>Weighted carry 3×40 m (50s)</div></div>
+        <div class="opt"><div class="pick"></div><div>Hanging knee raise 3×12</div></div>
+        <div class="opt"><div class="pick"></div><div>Slam ball 3×15 + side plank</div></div>
+      </div>
+      <div class="scale-note">Fasted AM: optional 5g BCAA pre-session in early adaptation; drop to 4×3 if recovery is poor. Last rep solid, never a grind. <strong>Overhead squat / snatch belong on Friday, not here.</strong></div>
     </div>
   </div>
 
+  <!-- WEDNESDAY -->
   <div class="day-card stress-mod" data-day="wed">
-    <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Wednesday</div><div class="day-title">Medium Run — 2–3 mi</div><div class="day-focus">Aerobic base · fat-loss pace</div></div><div class="chevron">▶</div><div class="day-check" data-check="wed"></div></div>
+    <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Wednesday</div><div class="day-title">Medium Run — 2–3 mi</div><div class="day-focus">Aerobic base · keep it pure</div></div><div class="chevron">▶</div><div class="day-check" data-check="wed"></div></div>
     <div class="day-body">
-      <div class="block"><div class="block-label">The run</div><div class="block-body">2–3 miles at a <strong>conversational pace</strong> — you should be able to speak in short sentences. This is an engine-builder, not a race.</div><span class="hr-tag hr-z3">Zone 3 · fat-burning</span></div>
-      <div class="block"><div class="block-label">Why slow</div><div class="block-body">When cardio is the limiter, long Zone 3 grinders build the aerobic base that makes everything else easier — WODs, mud runs, recovery. Walk the hills if heart rate spikes. That's correct pacing.</div></div>
-      <div class="block"><div class="block-label">Progression</div><div class="block-body">Hold 2–3 mi at steady pace for 3–4 weeks, then either add ½ mile OR add a 4×1 min tempo pickup in the middle. Same slot, never harder than your engine can hold.</div></div>
-      <div class="scale-note">Outdoor preferred (terrain = mud-run carryover). Treadmill in bad weather.</div>
+      <div class="block"><div class="block-label">The run</div><div class="block-body">2–3 miles at a <strong>conversational pace</strong> — short sentences possible. Engine-builder, not a race. Walk the hills if HR spikes.</div><span class="hr-tag hr-z3">Zone 3 · fat-burning</span></div>
+      <div class="block"><div class="block-label">Progression</div><div class="block-body">Hold 2–3 mi for 3–4 weeks, then add ½ mile OR a 4×1 min tempo pickup mid-run.</div></div>
+      <div class="scale-note">No barbell, no technical lifts here — this is a recovery/aerobic day. Outdoor preferred (terrain = mud-run carryover); treadmill if needed.</div>
     </div>
   </div>
 
+  <!-- THURSDAY -->
   <div class="day-card stress-mod" data-day="thu">
     <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Thursday</div><div class="day-title">Upper Body</div><div class="day-focus">Push / pull hypertrophy</div></div><div class="chevron">▶</div><div class="day-check" data-check="thu"></div></div>
     <div class="day-body">
-      <div class="block"><div class="block-label">Warm-up</div><div class="block-body">Band pull-aparts + shoulder dislocates · push-ups 2×10 · light bench sets building up.</div></div>
-      <div class="block"><div class="block-label">Main lift — Bench Press (wave, mirrors Tue)</div><div class="block-body">
-        <ul>
-          <li><strong>Weeks 1–3:</strong> 5×5 @ ~70–75% 1RM, building</li>
-          <li><strong>Heavy week:</strong> 4×4 @ ~80–85%</li>
-          <li><strong>Back-off:</strong> 3×5 @ ~65%, restart one notch up</li>
-        </ul></div></div>
-      <div class="block"><div class="block-label">Pull + accessories (8–15 reps)</div><div class="block-body">
-        <ul>
-          <li>Pull-ups — 4×max (or negatives / banded) — the back-width mover</li>
-          <li>One-arm DB row — 3×10/arm</li>
-          <li>DB shoulder press — 3×10</li>
-          <li>DB curls — 3×12 · Overhead triceps ext — 3×12</li>
-          <li>Lateral raises — 3×15 — shoulder caps drive the "fit" look</li>
-        </ul></div></div>
-      <div class="scale-note">Push/pull balance keeps shoulders healthy long-term. Pull-up volume drives the V-taper that reads lean even mid-cut.</div>
+      <div class="block"><div class="block-label">Warm-up</div><div class="block-body">Band pull-aparts + shoulder dislocates · push-ups 2×10 · light press sets.</div></div>
+      <div class="module" data-mod="thu-a"><div class="module-label">A — Horizontal press</div>
+        <div class="opt"><div class="pick"></div><div><b>Bench Press</b> 5×5 @ 70–75%</div></div>
+        <div class="opt"><div class="pick"></div><div><b>DB Bench</b> 4×8</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Incline DB Press</b> 3×10</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Weighted Push-up</b> 4×12</div></div>
+      </div>
+      <div class="module" data-mod="thu-b"><div class="module-label">B — Vertical pull</div>
+        <div class="opt"><div class="pick"></div><div>Pull-ups 4×max</div></div>
+        <div class="opt"><div class="pick"></div><div>Negatives 4×4 (5s lower)</div></div>
+        <div class="opt"><div class="pick"></div><div>Banded pull-ups 4×8</div></div>
+        <div class="opt"><div class="pick"></div><div>DB pullover 3×12</div></div>
+      </div>
+      <div class="module" data-mod="thu-c"><div class="module-label">C — Vertical press</div>
+        <div class="opt"><div class="pick"></div><div>DB shoulder press 3×10</div></div>
+        <div class="opt"><div class="pick"></div><div>Arnold press 3×10</div></div>
+        <div class="opt"><div class="pick"></div><div>Landmine press 3×10/arm</div></div>
+        <div class="opt"><div class="pick"></div><div>Push press 4×6</div></div>
+      </div>
+      <div class="module" data-mod="thu-d"><div class="module-label">D — Horizontal pull</div>
+        <div class="opt"><div class="pick"></div><div>1-arm DB row 3×10/arm (50s)</div></div>
+        <div class="opt"><div class="pick"></div><div>Chest-supported DB row 3×12</div></div>
+        <div class="opt"><div class="pick"></div><div>Bent-over barbell row 4×8</div></div>
+        <div class="opt"><div class="pick"></div><div>Inverted row 3×max</div></div>
+      </div>
+      <div class="module" data-mod="thu-e"><div class="module-label">E — Arms + delts (pick your favorite)</div>
+        <div class="opt"><div class="pick"></div><div>DB curls + overhead triceps 3×12</div></div>
+        <div class="opt"><div class="pick"></div><div>Lateral raises 3×15 (shoulder caps)</div></div>
+        <div class="opt"><div class="pick"></div><div>Hammer curls + dips 3×12</div></div>
+        <div class="opt"><div class="pick"></div><div>21s + skullcrushers</div></div>
+      </div>
+      <div class="scale-note">Pull-up volume drives the V-taper that reads lean even mid-cut. Push/pull balance keeps shoulders healthy.</div>
     </div>
   </div>
 
+  <!-- FRIDAY -->
   <div class="day-card stress-high" data-day="fri">
-    <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Friday</div><div class="day-title">WOD</div><div class="day-focus">Mixed-modal · CrossFit baseline · HIGH</div></div><div class="chevron">▶</div><div class="day-check" data-check="fri"></div></div>
+    <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Friday</div><div class="day-title">WOD</div><div class="day-focus">Oly/OHS skill + metcon · HIGH</div></div><div class="chevron">▶</div><div class="day-check" data-check="fri"></div></div>
     <div class="day-body">
-      <div class="block"><div class="block-label">Format</div><div class="block-body"><strong>Run ladder + couplet/triplet between</strong> (e.g. 200/400/800/400/200 m with rounds of work between), or a classic benchmark. ~30–40 min of work. Pull from the <strong>Friday WOD bank</strong> below.</div><span class="hr-tag hr-z45">Zone 4–5 OK here · this is the hard day</span></div>
-      <div class="block"><div class="block-label">Barbell weight</div><div class="block-body">Keep it light. On a WOD the <em>engine</em> should be the limiter, not the bar — this protects pacing and joints.</div></div>
-      <div class="scale-note">This is the day that keeps you "mud-run / drop-in ready." If you only protected two hard sessions a week, this + Tuesday squat are them. Scale reps, not intensity.</div>
+      <div class="module" data-mod="fri-skill"><div class="module-label">Skill primer (fresh, BEFORE the metcon — oly/OHS lives here)</div>
+        <div class="opt"><div class="pick"></div><div><b>Overhead Squat</b> 5×3 (light — technique + mobility)</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Snatch</b> technique 6×2 (light)</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Clean</b> technique 6×2</div></div>
+        <div class="opt"><div class="pick"></div><div>Pistol progression 10 min</div></div>
+        <div class="opt"><div class="pick"></div><div>Double-under practice 10 min</div></div>
+        <div class="opt"><div class="pick"></div><div>Handstand holds / wall walks</div></div>
+        <div class="opt"><div class="pick"></div><div>Skip skill — straight to WOD</div></div>
+      </div>
+      <div class="module" data-mod="fri-wod"><div class="module-label">Pick a WOD (~15 library · barbell light, engine is the limiter)</div>
+        <div class="opt"><div class="pick"></div><div><b>Fran</b> — 21-15-9: thrusters (95) + pull-ups</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Helen</b> — 3 RFT: 400 m run, 21 KB swings, 12 pull-ups</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Grace</b> — 30 clean &amp; jerks for time (light)</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Cindy</b> — 20 min AMRAP: 5/10/15</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Annie</b> — 50-40-30-20-10: double-unders + sit-ups</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Jackie</b> — 1000 m row, 50 thrusters (45), 30 pull-ups</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Diane</b> — 21-15-9: deadlift + HSPU (scale HSPU)</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Karen</b> — 150 wall balls / slam-ball sub, for time</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Nancy</b> — 5 RFT: 400 m run + 15 overhead squats (95)</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Barbara</b> — 5 rds: 20 pull-ups, 30 push-ups, 40 sit-ups, 50 squats</div></div>
+        <div class="opt"><div class="pick"></div><div><b>DT</b> — 5 rds: 12 deadlift, 9 hang clean, 6 push jerk (light)</div></div>
+        <div class="opt"><div class="pick"></div><div><b>The Chief</b> — 5× [3 min AMRAP: 3 cleans, 6 push-ups, 9 squats]</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Fight Gone Bad</b> — 3 rds, 5 stations × 1 min (wall ball/SDHP/box/push press/row)</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Filthy Fifty</b> — 50 reps × 10 movements chipper</div></div>
+        <div class="opt"><div class="pick"></div><div><b>Run Ladder (default)</b> — 200/400/800/400/200 + 1-2-3-2-1 triplet</div></div>
+      </div>
+      <span class="hr-tag hr-z45">Zone 4–5 OK · this is the hard day · scale reps not intensity</span>
+      <div class="scale-note">This is the session that keeps you mud-run / drop-in ready. Skill primer first while fresh, then the metcon.</div>
     </div>
   </div>
 
+  <!-- SATURDAY -->
   <div class="day-card stress-mod" data-day="sat">
-    <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Saturday</div><div class="day-title">Long Run</div><div class="day-focus">Engine · fat-loss grinder</div></div><div class="chevron">▶</div><div class="day-check" data-check="sat"></div></div>
+    <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Saturday</div><div class="day-title">Long Run</div><div class="day-focus">Engine · biggest aerobic builder</div></div><div class="chevron">▶</div><div class="day-check" data-check="sat"></div></div>
     <div class="day-body">
-      <div class="block"><div class="block-label">The run</div><div class="block-body">Start at 3–4 miles, build toward 5–6 over months. <strong>Slow and steady</strong> — the single biggest engine-builder in the week.</div><span class="hr-tag hr-z2">Zone 2–3 · easy aerobic</span></div>
-      <div class="block"><div class="block-label">Walk-run is the strategy, not a fallback</div><div class="block-body">Run until heart rate climbs, walk until it settles, repeat. Over weeks the run intervals lengthen on their own. That's exactly how the engine grows.</div></div>
-      <div class="block"><div class="block-label">Progression</div><div class="block-body">Add ~½ mile every 2–3 weeks until ~6 mi, then hold and add pace. A 6-mile easy base = you could jog a mud run tomorrow without training for it.</div></div>
-      <div class="scale-note">Fasted long runs are deep into fat-burning — keep electrolytes up (salt + water before, broth after).</div>
+      <div class="block"><div class="block-label">The run</div><div class="block-body">Start 3–4 mi, build toward 5–6 over months. <strong>Slow and steady.</strong> Walk-run: run until HR climbs, walk until it settles, repeat — the intervals lengthen on their own over weeks.</div><span class="hr-tag hr-z2">Zone 2–3 · easy aerobic</span></div>
+      <div class="block"><div class="block-label">Progression</div><div class="block-body">Add ~½ mile every 2–3 weeks until ~6 mi, then hold and add pace.</div></div>
+      <div class="scale-note">Fasted long runs are deep fat-burning — keep electrolytes up (salt + water before, broth after).</div>
     </div>
   </div>
 
+  <!-- SUNDAY -->
   <div class="day-card stress-low" data-day="sun">
-    <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Sunday</div><div class="day-title">Rest / Mobility</div><div class="day-focus">Recovery — makes 6 days survivable</div></div><div class="chevron">▶</div><div class="day-check" data-check="sun"></div></div>
+    <div class="day-head"><div class="day-dot"></div><div class="day-meta"><div class="day-name">Sunday</div><div class="day-title">Rest / Mobility</div><div class="day-focus">Recovery — makes 6 days work</div></div><div class="chevron">▶</div><div class="day-check" data-check="sun"></div></div>
     <div class="day-body">
-      <div class="block"><div class="block-label">Do</div><div class="block-body">Easy 20–30 min walk (Zone 1–2) · 10 min mobility on whatever's tight (hips, shoulders, ankles) · foam roll.</div></div>
-      <div class="block"><div class="block-label">Don't</div><div class="block-body">No lifting, no metcon. The whole 6-day plan works <em>because</em> Sunday is real recovery. Skip it and the wheels come off by week 6.</div></div>
+      <div class="block"><div class="block-label">Do</div><div class="block-body">Easy 20–30 min walk · 10 min mobility on what's tight (hips, shoulders, ankles) · foam roll.</div></div>
+      <div class="block"><div class="block-label">Don't</div><div class="block-body">No lifting, no metcon. The plan works <em>because</em> Sunday is real recovery.</div></div>
     </div>
   </div>
 
 </div>
 
-<button class="reset-week" id="reset-week">↺ Reset week (Sunday night)</button>
-
-<h2>Movement Banks — The Variety Engine</h2>
-
-<div class="bank-card" data-bank="mon">
-  <div class="bank-head"><div style="flex:1"><div class="bank-title">Monday Bodyweight Bank</div><div class="bank-sub">Rotate weekly — never repeat two weeks running</div></div><div class="chevron">▶</div></div>
-  <div class="bank-body">
-    <div class="wod"><div class="wod-name">Cindy</div><div class="wod-detail">20 min AMRAP: 5 pull-ups, 10 push-ups, 15 air squats. The classic. Count rounds, beat it next time.</div></div>
-    <div class="wod"><div class="wod-name">Death by Burpees</div><div class="wod-detail">Min 1: 1 burpee. Min 2: 2. Add one each minute until you can't finish in the minute.</div></div>
-    <div class="wod"><div class="wod-name">EMOM 24</div><div class="wod-detail">Rotate 4 min: push-ups / air squats / sit-ups / jump rope (40s work). 6 rounds.</div></div>
-    <div class="wod"><div class="wod-name">Bodyweight Chipper</div><div class="wod-detail">For time: 50 air squats, 40 lunges, 30 push-ups, 20 sit-ups, 10 burpees, 100 jump rope.</div></div>
-    <div class="wod"><div class="wod-name">Tabata Mix</div><div class="wod-detail">4 movements × 8 rounds (20s on/10s off): squats, push-ups, mountain climbers, hollow rocks.</div></div>
-    <div class="wod"><div class="wod-name">Ladder</div><div class="wod-detail">Run 400 m, then 10-9-8…-1 of push-ups + air squats, run 400 m to finish.</div></div>
-  </div>
-</div>
-
-<div class="bank-card" data-bank="fri">
-  <div class="bank-head"><div style="flex:1"><div class="bank-title">Friday WOD Bank</div><div class="bank-sub">Run-ladder + couplet/triplet format · barbell light</div></div><div class="chevron">▶</div></div>
-  <div class="bank-body">
-    <div class="wod"><div class="wod-name">The Run Ladder (default)</div><div class="wod-detail">200-400-800-400-200 m run. Between each: 1-2-3-2-1 rounds of [5 power cleans / 10 push-ups / 15 air squats]. ~35 min.</div></div>
-    <div class="wod"><div class="wod-name">DT (light)</div><div class="wod-detail">5 rounds: 12 deadlifts, 9 hang power cleans, 6 push jerks (light bar). Classic barbell grinder.</div></div>
-    <div class="wod"><div class="wod-name">Helen</div><div class="wod-detail">3 rounds for time: 400 m run, 21 KB/DB swings, 12 pull-ups. Fast benchmark — retest quarterly.</div></div>
-    <div class="wod"><div class="wod-name">Thruster + Run Triplet</div><div class="wod-detail">5 rounds: 400 m run, 10 thrusters, 10 box jumps. Engine + legs.</div></div>
-    <div class="wod"><div class="wod-name">Slam Ball Chipper</div><div class="wod-detail">For time: 800 m run, 40 slam balls, 30 DB snatches, 20 box jumps, 800 m run.</div></div>
-    <div class="wod"><div class="wod-name">EMOM 30 (3 movements)</div><div class="wod-detail">Min A: row/jump rope. Min B: 8 power cleans. Min C: 10 burpees. ×10.</div></div>
-    <div class="wod"><div class="wod-name">Quarter-Mile Repeats</div><div class="wod-detail">5 × [400 m run + 15 DB thrusters], rest 90s between. Pure mud-run prep.</div></div>
-  </div>
-</div>
+<button class="reset-week" id="reset-week">↺ Reset day checkmarks (new week)</button>
 
 <h2>Progression & Deload</h2>
 <div class="info-card">
-  <span class="lbl">Strength (Tue/Thu):</span> main lift waves up over 3–4 week blocks (5×5 → 4×4 heavier → back-off), then repeats one notch higher. Add weight OR reps — never both at once. Structure never changes.<br><br>
-  <span class="lbl">Runs (Wed/Sat):</span> extend distance or add tempo pickups month over month. Same slots forever.<br><br>
-  <span class="lbl">WOD / Bodyweight (Fri/Mon):</span> pull the next variation from the banks above. Fresh every week, format fixed.<br><br>
-  <span class="lbl">Deload every 4–6 weeks:</span> one lighter week — drop volume ~40% (cut sets, lighten bar, shorten runs). Joint insurance. You come back stronger, not behind.
+  <span class="lbl">Strength (Tue/Thu):</span> wave the main lift over 3–4 week blocks (5×5 → 4×4 heavier → back-off), then repeat one notch up. Add weight OR reps, never both.<br><br>
+  <span class="lbl">Runs (Wed/Sat):</span> extend distance or add tempo month over month.<br><br>
+  <span class="lbl">WOD / Bodyweight (Fri/Mon):</span> swap module picks each week — fresh stimulus, fixed format.<br><br>
+  <span class="lbl">Deload every 4–6 weeks:</span> one lighter week, ~40% less volume. Joint insurance. Come back stronger.
+</div>
+
+<h2>Why Squat Day &amp; WOD Day Stay Separate</h2>
+<div class="info-card">
+  <span class="lbl">Heavy squat (Tue)</span> is a strength/CNS day — keep it heavy and low-rep. Don't mix it with technical Olympic or overhead work when you're loaded and fatigued.<br><br>
+  <span class="lbl">Overhead squat, snatch, clean, thrusters, CrossFit skill (Fri)</span> go on WOD day as a <strong>skill primer when you're fresh</strong>, before the metcon. Technical + mobility-heavy = needs a fresh nervous system, not a fried one.<br><br>
+  <span class="lbl">Never before Wednesday's run</span> — that's a recovery/aerobic day; a technical barbell lift muddies its purpose.
 </div>
 
 <h2>Fasted-AM + Keto Notes</h2>
 <div class="info-card">
-  <span class="lbl">All sessions fasted AM</span> (before the eating window).<br><br>
-  <span class="lbl">The two hard fasted days</span> (Tue squat, Fri WOD): optional 5g BCAA pre-session during early adaptation (first 2–3 weeks); scale intensity back ~20% while adapting.<br><br>
-  <span class="lbl">Electrolytes before every session</span> — pinch of salt + water, magnesium at night. Same targets as the <a href="fast-tracker.html" style="color:#6ad08a;">fast tracker</a>.<br><br>
-  <span class="lbl">Rower note:</span> if shoes slip the stirrups, use flat-soled shoes or just socks — or sub bike / run / jump rope. Don't let it block a WOD.
+  <span class="lbl">All sessions fasted AM.</span> The two hard days (Tue squat, Fri WOD): optional 5g BCAA pre-session in early adaptation; scale intensity ~20% while adapting.<br><br>
+  <span class="lbl">Electrolytes before every session</span> — salt + water, magnesium at night. Same targets as the <a href="fast-tracker.html" style="color:#6ad08a;">fast tracker</a>.<br><br>
+  <span class="lbl">Rower note:</span> if shoes slip the stirrups, use flat-soled shoes or socks — or sub bike / run / jump rope.
 </div>
 
 <footer>
-  Training · 6-day protocol · fixed structure, rotating content<br>
-  Engine-priority, sustainable for years. Listen to your body over any number on the page.<br>
-  Not medical advice.
+  Training · 6-day modular builder · pick modules, structure stays fixed<br>
+  Engine-priority, sustainable for years. Listen to your body over any number. Not medical advice.
 </footer>
 
 <script>
 (function() {
-  var KEY = 'workout-week-done';
+  // Expand/collapse days
   document.querySelectorAll('.day-card').forEach(function(card) {
     card.querySelector('.day-head').addEventListener('click', function(e) {
       if (e.target.classList.contains('day-check')) return;
       card.classList.toggle('open');
     });
   });
-  document.querySelectorAll('.bank-card').forEach(function(card) {
-    card.querySelector('.bank-head').addEventListener('click', function() { card.classList.toggle('open'); });
-  });
-  function getDone() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e) { return {}; } }
-  function setDone(s) { localStorage.setItem(KEY, JSON.stringify(s)); }
+
+  // Day done checkmarks
+  var DONE = 'workout-week-done';
+  function getDone() { try { return JSON.parse(localStorage.getItem(DONE) || '{}'); } catch(e) { return {}; } }
+  function setDone(s) { localStorage.setItem(DONE, JSON.stringify(s)); }
   var done = getDone();
   document.querySelectorAll('.day-check').forEach(function(box) {
     var day = box.dataset.check;
@@ -258,10 +315,29 @@
     });
   });
   document.getElementById('reset-week').addEventListener('click', function() {
-    if (confirm('Reset all day checkmarks for a new week?')) {
-      localStorage.removeItem(KEY);
+    if (confirm('Reset all day checkmarks for a new week? (Your module picks stay saved.)')) {
+      localStorage.removeItem(DONE);
       document.querySelectorAll('.day-card').forEach(function(c){ c.classList.remove('done'); });
     }
+  });
+
+  // Module pick selection (single-select per module, persisted)
+  var PICKS = 'workout-picks';
+  function getPicks() { try { return JSON.parse(localStorage.getItem(PICKS) || '{}'); } catch(e) { return {}; } }
+  function setPicks(s) { localStorage.setItem(PICKS, JSON.stringify(s)); }
+  document.querySelectorAll('.module[data-mod]').forEach(function(mod) {
+    var id = mod.dataset.mod;
+    var opts = Array.prototype.slice.call(mod.querySelectorAll('.opt'));
+    var picks = getPicks();
+    if (picks[id] != null && opts[picks[id]]) opts[picks[id]].classList.add('sel');
+    opts.forEach(function(opt, i) {
+      opt.addEventListener('click', function() {
+        var s = getPicks();
+        if (s[id] === i) { delete s[id]; opt.classList.remove('sel'); }
+        else { s[id] = i; opts.forEach(function(o){ o.classList.remove('sel'); }); opt.classList.add('sel'); }
+        setPicks(s);
+      });
+    });
   });
 })();
 </script>
