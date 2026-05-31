@@ -47,7 +47,10 @@
     <div class="eq-label">Equipment you have <span class="eq-hint">(tap to toggle — hides what you can't do)</span></div>
     <div class="chips" id="eq-chips"></div>
   </div>
-  <div class="chips" id="chips"></div>
+  <div class="eq-row">
+    <div class="eq-label">Filter by group</div>
+    <div class="chips" id="chips"></div>
+  </div>
 </div>
 <div id="list"></div>
 
@@ -113,7 +116,7 @@
     "Slam Ball":["Slam ball"], "Wall Ball":["Wall ball"], "Burpee":["Bodyweight"], "Plank":["Bodyweight"],
     "Hollow Hold":["Bodyweight"], "Hanging Knee Raise":["Pull-up bar"], "Sit-up":["Bodyweight"]
   };
-  var EQUIP_LIST = ["Barbell","Dumbbells","Pull-up bar","Kettlebell","Plyo box","Slam ball","Jump rope","Rower","Wall ball","Band"];
+  var EQUIP_LIST = ["Barbell","Bumper plates","Dumbbells","Pull-up bar","Kettlebell","Plyo box","Slam ball","Jump rope","Rower","Wall ball","Band"];
   function loadEquip() { try { var s = JSON.parse(localStorage.getItem('lib-equipment')||'null'); if (s) return s; } catch(e){} var o={}; EQUIP_LIST.forEach(function(e){ o[e]=true; }); return o; }
   function saveEquip() { localStorage.setItem('lib-equipment', JSON.stringify(selEquip)); }
   var selEquip = loadEquip();
