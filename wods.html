@@ -7,113 +7,159 @@
 <title>WOD Finder</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d0d0f; color: #e8e8e8; padding: 20px; max-width: 760px; margin: 0 auto; padding-bottom: 50px; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d0d0f; color: #e8e8e8; padding: 16px 20px 50px; max-width: 760px; margin: 0 auto; }
   a.back { font-size: 0.75rem; color: #6ad08a; text-decoration: none; }
-  header { text-align: center; margin: 8px 0 12px; }
-  h1 { font-size: 1.3rem; font-weight: 800; color: #fff; }
-  .subtitle { font-size: 0.75rem; color: #666; margin-top: 4px; }
-  .search { position: sticky; top: 0; background: #0d0d0f; padding: 8px 0 8px; z-index: 10; }
-  .search input { width: 100%; background: #131318; border: 1px solid #2a2a33; color: #fff; border-radius: 9px; padding: 11px 14px; font-size: 0.95rem; font-family: inherit; }
-  .flabel { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #888; margin: 12px 0 6px; }
+  header { text-align: center; margin: 6px 0 10px; }
+  h1 { font-size: 1.2rem; font-weight: 800; color: #fff; }
+  .subtitle { font-size: 0.72rem; color: #666; margin-top: 3px; }
+
+  /* Sticky compact control bar */
+  .bar { position: sticky; top: 0; background: #0d0d0f; padding: 6px 0 8px; z-index: 10; border-bottom: 1px solid #15151b; }
+  .bar input { width: 100%; background: #131318; border: 1px solid #2a2a33; color: #fff; border-radius: 9px; padding: 10px 13px; font-size: 0.92rem; font-family: inherit; }
+
   .chips { display: flex; gap: 6px; flex-wrap: wrap; }
   .chip { font-size: 0.66rem; font-weight: 700; padding: 5px 11px; border-radius: 14px; background: #14141a; border: 1px solid #2a2a33; color: #999; cursor: pointer; }
-  #cat-chips .chip { font-size: 0.74rem; padding: 7px 16px; }
+
+  /* Category row — always visible (primary nav) */
+  .cat-row { margin-top: 8px; }
+  #cat-chips .chip { font-size: 0.74rem; padding: 7px 15px; }
   #cat-chips .chip.on { background: #3a2a14; border-color: #8a6a30; color: #e8c888; }
+
+  /* Advanced-filter toggle row */
+  .adv-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .adv-toggle { font-size: 0.68rem; font-weight: 700; color: #bbb; background: #16161d; border: 1px solid #2a2a33; border-radius: 8px; padding: 6px 12px; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; }
+  .adv-toggle .caret { transition: transform 0.18s; font-size: 0.6rem; }
+  .adv-toggle.open .caret { transform: rotate(180deg); }
+  .adv-badge { background: #2a6a8a; color: #cdeefb; font-size: 0.6rem; font-weight: 800; border-radius: 9px; padding: 1px 7px; }
+  .reset { font-size: 0.66rem; color: #aaa; background: #1a1a22; border: 1px solid #2a2a33; border-radius: 7px; padding: 6px 12px; cursor: pointer; font-family: inherit; }
+  .count { font-size: 0.7rem; color: #666; margin-left: auto; }
+
+  /* Advanced panel — collapsed by default */
+  .adv-panel { display: none; margin-top: 10px; padding: 11px 12px; background: #101016; border: 1px solid #1e1e26; border-radius: 10px; }
+  .adv-panel.show { display: block; }
+  .flabel { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #888; margin: 0 0 6px; }
+  .flabel:not(:first-child) { margin-top: 12px; }
   #fmt-chips .chip.on { background: #1a4a2a; border-color: #2a8a52; color: #8ce0a8; }
   #eq-chips .chip.on { background: #16323f; border-color: #2a6a8a; color: #8cc8e0; }
-  .count { font-size: 0.7rem; color: #666; margin: 12px 0 6px; }
-  .wod { background: #131318; border: 1px solid #1e1e26; border-radius: 10px; padding: 13px 15px; margin-bottom: 8px; }
+
+  /* Results */
+  .wod { background: #131318; border: 1px solid #1e1e26; border-radius: 10px; padding: 12px 15px; margin-bottom: 8px; }
   .w-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .w-name { font-size: 0.98rem; font-weight: 800; color: #fff; flex: 1; min-width: 120px; }
-  .w-fmt { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #8ce0a8; background: #14301e; padding: 3px 8px; border-radius: 10px; }
-  .w-desc { font-size: 0.85rem; color: #cbd; margin-top: 7px; line-height: 1.5; }
-  .w-eq { font-size: 0.68rem; color: #778; margin-top: 7px; }
+  .w-name { font-size: 0.96rem; font-weight: 800; color: #fff; flex: 1; min-width: 120px; }
+  .w-fmt { font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #8ce0a8; background: #14301e; padding: 3px 8px; border-radius: 10px; }
+  .w-desc { font-size: 0.84rem; color: #cbd; margin-top: 6px; line-height: 1.45; }
+  .w-eq { font-size: 0.66rem; color: #778; margin-top: 7px; }
   .w-eq span { background: #16161c; border: 1px solid #24242c; border-radius: 8px; padding: 2px 7px; margin-right: 4px; display: inline-block; margin-bottom: 3px; }
+  .list-head { font-size: 0.7rem; color: #666; margin: 12px 0 8px; }
   .empty { text-align: center; color: #666; padding: 30px; font-size: 0.85rem; }
-  .reset { font-size: 0.66rem; color: #aaa; background: #1a1a22; border: 1px solid #2a2a33; border-radius: 7px; padding: 6px 12px; cursor: pointer; font-family: inherit; margin-left: 8px; }
-  footer { margin-top: 24px; padding-top: 14px; border-top: 1px solid #1e1e26; font-size: 0.66rem; color: #555; text-align: center; line-height: 1.5; }
+  footer { margin-top: 22px; padding-top: 14px; border-top: 1px solid #1e1e26; font-size: 0.66rem; color: #555; text-align: center; line-height: 1.5; }
 </style>
 </head>
 <body>
 <a class="back" href="tools.html">← Tools</a>
 <header>
   <h1>WOD Finder</h1>
-  <p class="subtitle">Filter by format + equipment, or search by name</p>
+  <p class="subtitle">Browse by category, or open filters for format &amp; equipment</p>
 </header>
 
-<div class="search">
-  <input id="q" type="search" placeholder="Search WODs… (e.g. Fran, EMOM, burpee)" autocomplete="off">
-  <div class="flabel">Category</div>
-  <div class="chips" id="cat-chips"></div>
-  <div class="flabel">Format</div>
-  <div class="chips" id="fmt-chips"></div>
-  <div class="flabel">Equipment used <span id="reset-wrap"></span></div>
-  <div class="chips" id="eq-chips"></div>
+<div class="bar">
+  <input id="q" type="search" placeholder="Search WODs… (e.g. Fran, Murph, EMOM, burpee)" autocomplete="off">
+  <div class="cat-row"><div class="chips" id="cat-chips"></div></div>
+  <div class="adv-row">
+    <button class="adv-toggle" id="adv-toggle"><span>Filters</span><span class="adv-badge" id="adv-badge" style="display:none">0</span><span class="caret">▼</span></button>
+    <button class="reset" id="reset">Clear</button>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="adv-panel" id="adv-panel">
+    <div class="flabel">Format</div>
+    <div class="chips" id="fmt-chips"></div>
+    <div class="flabel">Equipment used</div>
+    <div class="chips" id="eq-chips"></div>
+  </div>
 </div>
-<div class="count" id="count"></div>
+
+<div class="list-head" id="list-head"></div>
 <div id="list"></div>
 
-<footer>Scale loads &amp; reps to you. Found one you like? Note it for your WOD day.<br>More WODs get added over time — this list grows.</footer>
+<footer>Scale loads &amp; reps to you. Found one you like? Note it for your WOD day.<br>126 benchmark WODs — Girls, Heroes, Open &amp; more.</footer>
 
 <script src="wods-data.js"></script>
 <script>
 (function() {
-  // [name, format, equipment[], description]
+  // [name, format, equipment[], description, category]
   var WODS = window.WODS || [];
 
   var FORMATS = ["AMRAP","EMOM","For Time","RFT","Ladder","Chipper","Tabata","Interval"];
   var EQUIP = ["Bodyweight","Barbell","Dumbbells","Kettlebell","Pull-up bar","Box","Jump rope","Rower","Slam ball","Wall ball"];
+  var CATS = [['all','All'],['girl','Girls'],['hero','Heroes'],['open','Open'],['other','Other']];
 
-  var selFmt = {}, selEq = {};
-  function loadSel() {
-    try { selFmt = JSON.parse(localStorage.getItem('wod-fmt')||'{}'); } catch(e) { selFmt = {}; }
-    try { selEq = JSON.parse(localStorage.getItem('wod-eq')||'{}'); } catch(e) { selEq = {}; }
-  }
-  function saveSel() { localStorage.setItem('wod-fmt', JSON.stringify(selFmt)); localStorage.setItem('wod-eq', JSON.stringify(selEq)); }
-  loadSel();
+  // Filters always start clean on load (no stale persisted state).
+  var selFmt = {}, selEq = {}, selCat = 'all';
 
   var qEl = document.getElementById('q');
   var listEl = document.getElementById('list');
   var countEl = document.getElementById('count');
+  var headEl = document.getElementById('list-head');
   var fmtChipsEl = document.getElementById('fmt-chips');
   var eqChipsEl = document.getElementById('eq-chips');
   var catChipsEl = document.getElementById('cat-chips');
+  var advToggle = document.getElementById('adv-toggle');
+  var advPanel = document.getElementById('adv-panel');
+  var advBadge = document.getElementById('adv-badge');
 
-  var CATS = [['all','All'],['girl','Girls'],['hero','Heroes'],['other','Other']];
-  var selCat = localStorage.getItem('wod-cat') || 'all';
+  function anyOn(o) { return Object.keys(o).some(function(k){ return o[k]; }); }
+  function countOn(o) { return Object.keys(o).filter(function(k){ return o[k]; }).length; }
+
+  // Category chips (always visible)
   CATS.forEach(function(c) {
-    var b = document.createElement('button'); b.className = 'chip cat' + (selCat === c[0] ? ' on' : ''); b.textContent = c[1]; b.dataset.cat = c[0];
+    var b = document.createElement('button');
+    b.className = 'chip cat' + (selCat === c[0] ? ' on' : '');
+    b.textContent = c[1]; b.dataset.cat = c[0];
     b.addEventListener('click', function() {
-      selCat = c[0]; localStorage.setItem('wod-cat', selCat);
+      selCat = c[0];
       Array.prototype.forEach.call(catChipsEl.children, function(ch){ ch.classList.toggle('on', ch.dataset.cat === selCat); });
       render();
     });
     catChipsEl.appendChild(b);
   });
 
-  function anyOn(o) { return Object.keys(o).some(function(k){ return o[k]; }); }
-
-  function buildChips(container, items, sel, key) {
+  function buildChips(container, items, sel) {
     items.forEach(function(it) {
-      var b = document.createElement('button'); b.className = 'chip' + (sel[it] ? ' on' : ''); b.textContent = it;
-      b.addEventListener('click', function() { sel[it] = !sel[it]; b.classList.toggle('on', sel[it]); saveSel(); render(); });
+      var b = document.createElement('button');
+      b.className = 'chip' + (sel[it] ? ' on' : '');
+      b.textContent = it;
+      b.addEventListener('click', function() { sel[it] = !sel[it]; b.classList.toggle('on', sel[it]); updateBadge(); render(); });
       container.appendChild(b);
     });
   }
-  buildChips(fmtChipsEl, FORMATS, selFmt, 'fmt');
-  buildChips(eqChipsEl, EQUIP, selEq, 'eq');
+  buildChips(fmtChipsEl, FORMATS, selFmt);
+  buildChips(eqChipsEl, EQUIP, selEq);
+
+  function updateBadge() {
+    var n = countOn(selFmt) + countOn(selEq);
+    advBadge.textContent = n;
+    advBadge.style.display = n ? 'inline-block' : 'none';
+  }
+
+  // Collapsible advanced panel (collapsed by default → max list space)
+  advToggle.addEventListener('click', function() {
+    advPanel.classList.toggle('show');
+    advToggle.classList.toggle('open', advPanel.classList.contains('show'));
+  });
 
   function render() {
     var filter = (qEl.value || '').toLowerCase().trim();
     var fmtActive = anyOn(selFmt), eqActive = anyOn(selEq);
     var shown = WODS.filter(function(w) {
       if (selCat !== 'all' && w[4] !== selCat) return false;
-      if (filter && w[0].toLowerCase().indexOf(filter) === -1 && w[1].toLowerCase().indexOf(filter) === -1) return false;
+      if (filter && w[0].toLowerCase().indexOf(filter) === -1 && w[1].toLowerCase().indexOf(filter) === -1 && w[3].toLowerCase().indexOf(filter) === -1) return false;
       if (fmtActive && !selFmt[w[1]]) return false;
       if (eqActive && !w[2].some(function(e){ return selEq[e]; })) return false;
       return true;
     });
     countEl.textContent = shown.length + ' WOD' + (shown.length === 1 ? '' : 's');
+    var catLabel = (CATS.filter(function(c){ return c[0]===selCat; })[0] || ['','All'])[1];
+    headEl.textContent = (selCat === 'all' ? 'All categories' : catLabel) + ' · ' + shown.length + ' shown';
     if (!shown.length) { listEl.innerHTML = '<div class="empty">No WODs match. Loosen a filter.</div>'; return; }
     var html = '';
     shown.forEach(function(w) {
@@ -124,16 +170,17 @@
     listEl.innerHTML = html;
   }
 
-  var reset = document.createElement('button'); reset.className = 'reset'; reset.textContent = 'Clear filters';
-  reset.addEventListener('click', function() {
-    selFmt = {}; selEq = {}; selCat = 'all'; localStorage.setItem('wod-cat', 'all'); saveSel();
+  document.getElementById('reset').addEventListener('click', function() {
+    selFmt = {}; selEq = {}; selCat = 'all';
+    qEl.value = '';
     Array.prototype.forEach.call(document.querySelectorAll('.chip'), function(c){ c.classList.remove('on'); });
     Array.prototype.forEach.call(catChipsEl.children, function(ch){ ch.classList.toggle('on', ch.dataset.cat === 'all'); });
+    updateBadge();
     render();
   });
-  document.getElementById('reset-wrap').appendChild(reset);
 
   qEl.addEventListener('input', render);
+  updateBadge();
   render();
 })();
 </script>

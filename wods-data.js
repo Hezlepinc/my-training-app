@@ -1,8 +1,9 @@
 /* Shared WOD library — used by the WOD Finder (wods.html) and the WOD picker
  * on a WOD training day (workout.html). Add as many as you want.
  * Format: [name, format, equipment[], description, category]
- * category: "girl" | "hero" | "other"
- * Rx loads shown are the men's prescription — scale to you. */
+ * category: "girl" | "hero" | "open" | "other"
+ * Rx loads shown are the men's prescription — scale to you.
+ * Prescriptions authored from public-domain CrossFit benchmark facts. */
 window.WODS = [
   // ============ THE GIRLS (CrossFit benchmark) ============
   ["Fran","For Time",["Barbell","Pull-up bar"],"21-15-9: thrusters (95) + pull-ups. The classic sprint — go unbroken if you can.","girl"],
@@ -30,6 +31,8 @@ window.WODS = [
   ["Gwen","For Time",["Barbell"],"Clean & jerk 15-12-9, same load all sets, touch-and-go at floor, rest as needed. You pick the weight.","girl"],
   ["Maggie","RFT",["Pull-up bar","Bodyweight"],"5 rounds: 20 handstand push-ups, 40 pull-ups, 60 alternating pistols.","girl"],
   ["Candy","RFT",["Pull-up bar","Bodyweight"],"5 rounds: 20 pull-ups, 40 push-ups, 60 squats.","girl"],
+  ["Marguerita","RFT",["Bodyweight"],"50 rounds: 1 burpee, 1 push-up, 1 jumping jack, 1 sit-up, 1 handstand.","girl"],
+  ["Megan","For Time",["Kettlebell","Jump rope"],"21-15-9: burpees, KB swings (53), double-unders.","girl"],
 
   // ============ HERO WODs ============
   ["Murph","For Time",["Pull-up bar","Bodyweight"],"1 mi run, 100 pull-ups, 200 push-ups, 300 squats, 1 mi run. Vest optional. Partition the middle.","hero"],
@@ -77,11 +80,46 @@ window.WODS = [
   ["Mr Joshua","RFT",["Bodyweight","Barbell"],"5 rounds: 400 m run, 30 GHD/anchored sit-ups, 15 deadlifts (250).","hero"],
   ["Griff","For Time",["Bodyweight"],"800 m run, 400 m run backward, 800 m run, 400 m run backward.","hero"],
   ["Arnie","For Time",["Kettlebell"],"With one KB (53): 21 Turkish get-ups R, 50 swings, 21 OHS L, 50 swings, 21 OHS R, 50 swings, 21 TGU L.","hero"],
+  ["Michael","RFT",["Bodyweight"],"3 rounds: 800 m run, 50 back extensions, 50 sit-ups.","hero"],
+  ["Nutts","Chipper",["Bodyweight","Barbell","Box","Pull-up bar","Wall ball","Jump rope"],"10 HSPU, 15 deadlifts (250), 25 box jumps (30), 50 pull-ups, 100 wall balls (20), 200 double-unders, 400 m run with a 45-lb plate.","hero"],
+  ["Lumberjack 20","Chipper",["Barbell","Kettlebell","Pull-up bar","Box","Dumbbells","Bodyweight"],"400 m run between each: 20 deadlifts (275), 20 KB swings (70), 20 OHS (115), 20 burpees, 20 C2B pull-ups, 20 box jumps (24), 20 DB squat cleans (45).","hero"],
+  ["Adam Brown","RFT",["Barbell","Box","Wall ball"],"2 rounds: 24 deadlifts (295), 24 box jumps (24), 24 wall balls (20), 24 bench press (195), 24 box jumps, 24 wall balls, 24 cleans (145).","hero"],
+  ["Hamilton","RFT",["Rower","Bodyweight","Pull-up bar"],"3 rounds: 1000 m row, 50 push-ups, 1000 m run, 50 pull-ups.","hero"],
+  ["Holbrook","Interval",["Barbell","Pull-up bar","Bodyweight"],"10 rounds: 5 thrusters (115), 10 pull-ups, 100 m sprint — rest 1 min between rounds.","hero"],
+  ["Blake","RFT",["Barbell","Box","Wall ball","Bodyweight"],"4 rounds: 100-ft overhead walking lunge (45 plate), 30 box jumps (24), 20 wall balls (20), 10 HSPU.","hero"],
+  ["Wood","Interval",["Box","Barbell","Bodyweight"],"5 rounds: 400 m run, 10 burpee box jumps (24), 10 SDHP (95), 10 thrusters (95) — rest 1 min.","hero"],
+  ["Abbate","For Time",["Barbell","Bodyweight"],"1 mi run, 21 clean & jerks (155), 800 m run, 21 clean & jerks (155), 1 mi run.","hero"],
+  ["Riley","For Time",["Bodyweight"],"1.5 mi run, 150 burpees, 1.5 mi run. Vest (20) if able.","hero"],
+  ["Marco","RFT",["Pull-up bar","Barbell","Bodyweight"],"3 rounds: 21 pull-ups, 15 HSPU, 9 thrusters (135).","hero"],
+  ["Jared","RFT",["Pull-up bar","Bodyweight"],"4 rounds: 800 m run, 40 pull-ups, 70 push-ups.","hero"],
+  ["Luce","RFT",["Pull-up bar","Bodyweight"],"3 rounds (20-lb vest): 1000 m run, 10 muscle-ups, 100 squats.","hero"],
+  ["Small","RFT",["Rower","Box","Bodyweight"],"3 rounds: 1000 m row, 50 burpees, 50 box jumps (24), 800 m run.","hero"],
+  ["Weston","RFT",["Rower","Dumbbells"],"5 rounds: 1000 m row, 200 m farmer carry (45 DBs), 50 m waiter walk L (45), 50 m waiter walk R (45).","hero"],
+  ["Gator","RFT",["Barbell","Bodyweight"],"8 rounds: 5 front squats (185), 26 ring push-ups.","hero"],
+  ["Stephen","For Time",["Bodyweight","Barbell","Pull-up bar"],"30-25-20-15-10-5: GHD sit-ups, back extensions, knees-to-elbow, stiff-legged deadlifts (95).","hero"],
+  ["Ledesma","RFT",["Bodyweight","Pull-up bar","Wall ball"],"6 rounds: 5 parallette HSPU, 10 toes-through-rings, 15 medicine-ball cleans (20).","hero"],
+  ["Bradley","Interval",["Bodyweight","Pull-up bar"],"10 rounds: 100 m sprint, 10 pull-ups, 100 m sprint, 10 burpees — rest 30 s.","hero"],
+  ["McCluskey","RFT",["Pull-up bar","Bodyweight"],"3 rounds: 9 muscle-ups, 15 burpee pull-ups, 21 pull-ups, 800 m run.","hero"],
+  ["DG","RFT",["Pull-up bar","Dumbbells"],"10 rounds: 8 toes-to-bar, 8 DB thrusters (35), 12 DB walking lunges (35).","hero"],
+  ["Brian","RFT",["Pull-up bar","Barbell"],"3 rounds: 5 rope climbs (15 ft), 25 back squats (185).","hero"],
+  ["Thompson","RFT",["Pull-up bar","Barbell"],"10 rounds: 1 rope climb (15 ft), 29 back squats (95), 10 m barbell farmer carry (135/hand).","hero"],
+  ["Kalsu","For Time",["Barbell","Bodyweight"],"100 thrusters (135) for time — start each minute (incl. min 0) with 5 burpees, then thrusters.","hero"],
+
+  // ============ CROSSFIT OPEN / GAMES BENCHMARKS ============
+  ["Open 14.1","AMRAP",["Jump rope","Barbell"],"10 min AMRAP: 30 double-unders, 15 power snatches (75). (Also 11.1.)","open"],
+  ["Open 14.4","AMRAP",["Rower","Pull-up bar","Wall ball","Barbell"],"14 min AMRAP chipper: 60-cal row, 50 toes-to-bar, 40 wall balls (20), 30 cleans (135), 20 muscle-ups.","open"],
+  ["Open 14.5","For Time",["Barbell","Bodyweight"],"21-18-15-12-9-6-3: thrusters (95) + bar-facing burpees. No time cap — just finish. (Also 16.5.)","open"],
+  ["Open 16.4","AMRAP",["Barbell","Wall ball","Rower","Bodyweight"],"13 min AMRAP: 55 deadlifts (225), 55 wall balls (20), 55-cal row, 55 HSPU. (Also 17.4.)","open"],
+  ["Open 17.5","RFT",["Barbell","Jump rope"],"10 rounds: 9 thrusters (95), 35 double-unders.","open"],
+  ["Open 19.1","AMRAP",["Wall ball","Rower"],"15 min AMRAP: 19 wall balls (20), 19-cal row.","open"],
+  ["Triple 3","For Time",["Rower","Jump rope","Bodyweight"],"3000 m row, 300 double-unders, 3 mi run. A Games engine test.","open"],
+  ["CrossFit Total","For Time",["Barbell"],"Best of 3 attempts each: 1RM back squat + 1RM shoulder press + 1RM deadlift. Score = the sum.","open"],
 
   // ============ OTHER / minimal-equipment / formats ============
   ["Fight Gone Bad","For Time",["Wall ball","Barbell","Box","Rower"],"3 rounds, 5 stations × 1 min: wall ball (20), SDHP (75), box jump (20), push press (75), row (cals). 1 min rest between rounds.","other"],
   ["Filthy Fifty","Chipper",["Box","Pull-up bar","Kettlebell","Wall ball","Jump rope"],"50 reps each: box jumps, jumping pull-ups, KB swings, walking lunges, knees-to-elbow, push press (45), back ext, wall balls, burpees, double-unders.","other"],
   ["Tabata This","Tabata",["Bodyweight","Rower","Pull-up bar"],"Tabata (20s on/10s off ×8) of row, squats, pull-ups, push-ups, sit-ups. Lowest round scores each.","other"],
+  ["The Ghost","AMRAP",["Rower","Jump rope","Bodyweight"],"6 rounds: 1 min max-cal row, 1 min max burpees, 1 min max double-unders — rest 1 min between rounds.","other"],
   ["Cindy XXL","AMRAP",["Pull-up bar","Bodyweight"],"30 min Cindy: 5 pull-ups, 10 push-ups, 15 squats.","other"],
   ["DB Fran","For Time",["Dumbbells","Pull-up bar"],"21-15-9: dumbbell thrusters + pull-ups.","other"],
   ["DB EMOM","EMOM",["Dumbbells"],"20 min EMOM — odd: 10 DB snatches, even: 10 DB thrusters.","other"],
