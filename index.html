@@ -29,11 +29,14 @@
   .day-macros { margin-left: auto; font-size: 0.72rem; color: #9aa; font-weight: 600; }
   .day-macros .cal { color: #e8c888; font-weight: 800; }
   .meals { padding: 0 15px; }
-  .meal { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid #1c1c24; font-size: 0.84rem; }
+  .meal { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 8px; padding: 9px 0; border-top: 1px solid #1c1c24; font-size: 0.84rem; }
   .meal:first-child { border-top: none; }
-  .meal .mn { flex: 1; color: #e8e8e8; line-height: 1.3; }
-  .meal .mm { font-size: 0.66rem; color: #778; white-space: nowrap; }
-  .meal .rm { color: #c66; font-size: 1.1rem; cursor: pointer; padding: 0 4px; line-height: 1; }
+  .meal .mn { flex: 1 1 100%; color: #e8e8e8; line-height: 1.3; }
+  .meal .mm { font-size: 0.66rem; color: #778; }
+  .meal .step { margin-left: auto; display: flex; align-items: center; gap: 9px; }
+  .meal .step button { width: 26px; height: 26px; border-radius: 7px; border: 1px solid #2a3a33; background: #16241c; color: #8ce0b0; font-size: 1.1rem; font-weight: 800; cursor: pointer; line-height: 1; font-family: inherit; padding: 0; }
+  .meal .step button:active { transform: scale(0.88); }
+  .meal .step .sn { min-width: 16px; text-align: center; font-weight: 800; color: #fff; font-size: 0.92rem; }
   .empty-day { font-size: 0.78rem; color: #5a5a66; font-style: italic; padding: 4px 0 8px; }
   .add-btn { width: 100%; background: #0f1a14; border: 1px dashed #2a6a4a; color: #7fe0a8; border-radius: 8px; padding: 9px; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: inherit; margin: 6px 0 13px; }
   .add-btn:active { transform: scale(0.99); }
@@ -70,7 +73,8 @@
   .dtag.keto { background: #2a1830; color: #d8a8e8; } .dtag.paleo { background: #2a2410; color: #e0c878; }
   .dtag.standard { background: #16263a; color: #88c0e8; } .dtag.plant { background: #14301e; color: #8ce0a8; }
   .dtag.any { background: #222; color: #aaa; }
-  .pick .plus { font-size: 1.3rem; color: #2a9a5a; font-weight: 800; }
+  .pick .plus { font-size: 1.15rem; color: #2a9a5a; font-weight: 800; min-width: 22px; text-align: center; }
+  .pick.added { border-color: #2a5a44; background: #10231a; }
   .pick .info { font-size: 1.05rem; color: #6a9a8a; cursor: pointer; padding: 0 3px; }
   .meal .mn.tap { cursor: pointer; }
   .meal .mn.tap:active { color: #7fe8c0; }
@@ -193,19 +197,28 @@
       if (!meals.length) {
         html += '<div class="empty-day">No meals yet — tap + Add meal</div>';
       } else {
-        meals.forEach(function(id, i){
-          var nm = (R[id] && R[id].name) || id, m = macros(id);
-          html += '<div class="meal"><span class="mn tap" data-id="' + id + '">' + nm + '</span>' +
-            '<span class="mm">' + m.cal + ' cal · ' + m.p + 'P ' + m.c + 'C ' + m.f + 'F</span>' +
-            '<span class="rm" data-day="' + key + '" data-i="' + i + '">×</span></div>';
+        // collapse duplicates → one row per meal with a servings count
+        var order = [], counts = {};
+        meals.forEach(function(id){ if (counts[id] == null) { counts[id] = 0; order.push(id); } counts[id]++; });
+        order.forEach(function(id){
+          var nm = (R[id] && R[id].name) || id, m = macros(id), n = counts[id];
+          html += '<div class="meal"><span class="mn tap" data-id="' + id + '">' + nm + (n>1?(' <span style="color:#778;font-size:0.74rem">×' + n + '</span>'):'') + '</span>' +
+            '<span class="mm">' + (m.cal*n) + ' cal · ' + (m.p*n) + 'P ' + (m.c*n) + 'C ' + (m.f*n) + 'F</span>' +
+            '<span class="step"><button class="sdec" data-day="' + key + '" data-id="' + id + '">−</button>' +
+            '<span class="sn">' + n + '</span>' +
+            '<button class="sinc" data-day="' + key + '" data-id="' + id + '">+</button></span></div>';
         });
       }
       html += '</div><button class="add-btn" data-add="' + key + '">+ Add meal</button></div>';
     });
     weekEl.innerHTML = html;
     weekEl.querySelectorAll('.add-btn').forEach(function(b){ b.onclick = function(){ openPicker(b.dataset.add); }; });
-    weekEl.querySelectorAll('.rm').forEach(function(x){ x.onclick = function(){
-      week[x.dataset.day].splice(+x.dataset.i, 1); save(); renderWeek(); renderTotal();
+    weekEl.querySelectorAll('.sinc').forEach(function(b){ b.onclick = function(){
+      week[b.dataset.day].push(b.dataset.id); save(); renderWeek(); renderTotal();
+    }; });
+    weekEl.querySelectorAll('.sdec').forEach(function(b){ b.onclick = function(){
+      var arr = week[b.dataset.day], idx = arr.lastIndexOf(b.dataset.id);
+      if (idx > -1) { arr.splice(idx, 1); save(); renderWeek(); renderTotal(); }
     }; });
     weekEl.querySelectorAll('.mn.tap').forEach(function(s){ s.onclick = function(){ openDetail(s.dataset.id); }; });
   }
@@ -249,15 +262,21 @@
       return (R[a].name||'').localeCompare(R[b].name||'');
     });
     if (!ids.length) { ovList.innerHTML = '<div class="empty-day" style="padding:20px;text-align:center">No meals match.</div>'; return; }
+    var dayArr = week[pickerDay] || [], dc = {};
+    dayArr.forEach(function(id){ dc[id] = (dc[id]||0) + 1; });
     ovList.innerHTML = ids.map(function(id){
-      var m = M[id], nm = R[id].name;
-      return '<div class="pick" data-id="' + id + '"><div class="pn"><div class="nm">' + nm + '</div>' +
+      var m = M[id], nm = R[id].name, n = dc[id] || 0;
+      var ind = n ? ('✓' + (n>1?(' '+n):'')) : '+';
+      return '<div class="pick' + (n?' added':'') + '" data-id="' + id + '"><div class="pn"><div class="nm">' + nm + '</div>' +
         '<div class="mc">' + m[1] + ' cal · ' + m[2] + 'P ' + m[3] + 'C ' + m[4] + 'F · ~$' + (COST[id]||0) + '</div></div>' +
-        '<span class="info" data-info="' + id + '">&#9432;</span><span class="dtag ' + m[0] + '">' + m[0] + '</span><span class="plus">+</span></div>';
+        '<span class="info" data-info="' + id + '">&#9432;</span><span class="dtag ' + m[0] + '">' + m[0] + '</span><span class="plus">' + ind + '</span></div>';
     }).join('');
     ovList.querySelectorAll('.pick').forEach(function(p){ p.onclick = function(){
-      week[pickerDay].push(p.dataset.id); save(); renderWeek(); renderTotal();
-      var plus = p.querySelector('.plus'); plus.textContent = '✓'; setTimeout(function(){ plus.textContent='+'; }, 350);
+      var id = p.dataset.id;
+      week[pickerDay].push(id); save(); renderWeek(); renderTotal();
+      var c = week[pickerDay].filter(function(x){ return x===id; }).length;
+      p.classList.add('added');
+      p.querySelector('.plus').textContent = '✓' + (c>1?(' '+c):'');   // persists — no revert to +
     }; });
     ovList.querySelectorAll('.info').forEach(function(ic){ ic.onclick = function(e){ e.stopPropagation(); openDetail(ic.dataset.info); }; });
   }

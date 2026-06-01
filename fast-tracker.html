@@ -26,6 +26,10 @@
   .timer-unit { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.15em; margin-top: 8px; }
   .timer-phase { font-size: 1rem; font-weight: 700; margin-top: 16px; padding: 6px 16px; border-radius: 20px; display: inline-block; }
   .timer-since { font-size: 0.72rem; color: #555; margin-top: 12px; }
+  .timer-count { font-size: 1.5rem; font-weight: 800; color: #6aaae0; font-variant-numeric: tabular-nums; margin-top: 14px; letter-spacing: 0.01em; }
+  .timer-count .cd-label { font-size: 0.66rem; color: #667; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  .cd-bar { height: 6px; background: #1a1a22; border-radius: 3px; overflow: hidden; margin-top: 10px; }
+  .cd-bar .fill { height: 100%; background: linear-gradient(to right,#2a6aaa,#6aaae0); width: 0%; transition: width 0.9s linear; }
 
   .phase-fasting { background: #1a2a4a; color: #6aaae0; }
   .phase-deep { background: #2a1a4a; color: #a080e0; }
@@ -183,6 +187,8 @@
   <div class="timer-elapsed" id="elapsed">--:--</div>
   <div class="timer-unit" id="elapsed-unit">not started</div>
   <div class="timer-phase phase-notstarted" id="phase">Set start time below</div>
+  <div class="timer-count" id="countdown"></div>
+  <div class="cd-bar"><div class="fill" id="cd-fill"></div></div>
   <div class="timer-since" id="since"></div>
 </div>
 
@@ -206,10 +212,10 @@
 
 <h2>Electrolytes — Non-Negotiable (tap to check off, resets each new dose)</h2>
 <div class="elec-card">
-  <div class="elec-row"><div class="elec-check" data-elec="sodium"></div><div class="elec-body"><div class="elec-name">Sodium 3,000–5,000 mg/day</div><div class="elec-detail">Salt water (¼ tsp pink salt in water) + bone broth. Salt MORE than feels normal.</div></div></div>
-  <div class="elec-row"><div class="elec-check" data-elec="potassium"></div><div class="elec-body"><div class="elec-name">Potassium 1,000–3,500 mg/day</div><div class="elec-detail">Bone broth, LMNT if you have it.</div></div></div>
+  <div class="elec-row"><div class="elec-check" data-elec="sodium"></div><div class="elec-body"><div class="elec-name">Sodium 3,000–5,000 mg/day</div><div class="elec-detail">Salt water (¼ tsp pink salt in 12 oz water). Salt MORE than feels normal.</div></div></div>
+  <div class="elec-row"><div class="elec-check" data-elec="potassium"></div><div class="elec-body"><div class="elec-name">Potassium 1,000–3,500 mg/day</div><div class="elec-detail">LMNT or potassium chloride (Lite Salt) — zero-sugar, zero-calorie.</div></div></div>
   <div class="elec-row"><div class="elec-check" data-elec="magnesium"></div><div class="elec-body"><div class="elec-name">Magnesium 300–400 mg (evening)</div><div class="elec-detail">Magnesium glycinate before bed. Prevents cramps.</div></div></div>
-  <div class="elec-row"><div class="elec-check" data-elec="broth"></div><div class="elec-body"><div class="elec-name">Bone broth — 1–2 cups today</div><div class="elec-detail">~40–80 cal/cup. It <b>technically breaks a strict (clean/autophagy) fast</b> and blunts it a little — but the sodium &amp; potassium keep you safe and functional on a longer fast. Chasing max autophagy? Skip it and use salt water instead.</div></div></div>
+  <div class="elec-row"><div class="elec-check" data-elec="water"></div><div class="elec-body"><div class="elec-name">Water — 3+ liters today</div><div class="elec-detail"><b>Pure fast = zero calories.</b> Only water, black coffee, plain tea &amp; electrolytes. Drink on a schedule, not just when thirsty.</div></div></div>
   <button class="elec-reset" id="elec-reset">↺ Reset checkboxes for next dose / new day</button>
 </div>
 
@@ -217,11 +223,11 @@
 <div class="two-col">
   <div class="allow-card allow-yes">
     <div class="allow-title">✓ Allowed</div>
-    <div>Black coffee<br>Green tea<br>Water (lots)<br>Sparkling water (plain)<br>Bone broth (1–2 cups) <span style="color:#666;">(~40–80 cal — modified fast)</span><br>ACV in water<br>Electrolytes (zero sugar)</div>
+    <div>Black coffee<br>Green tea<br>Water (lots)<br>Sparkling water (plain)<br>ACV in water<br>Electrolytes (zero sugar, zero cal)</div>
   </div>
   <div class="allow-card allow-no">
     <div class="allow-title">✗ Breaks the Fast</div>
-    <div>MCT oil <span style="color:#666;">(OK in 16:8, not here)</span><br>Heavy cream<br>Any sweetener (even erythritol)<br>Food of any kind</div>
+    <div>Bone broth <span style="color:#666;">(~40–80 cal — modified fast only)</span><br>MCT oil <span style="color:#666;">(OK in 16:8, not here)</span><br>Heavy cream<br>Any sweetener (even erythritol)<br>Food of any kind</div>
   </div>
 </div>
 
@@ -244,7 +250,7 @@
 </div>
 
 <h2>Breaking the Fast (matters as much as the fast)</h2>
-<div class="break-step"><div class="break-num">1</div><div class="break-body">1 cup bone broth first.<div class="break-wait">WAIT 20–30 MIN</div></div></div>
+<div class="break-step"><div class="break-num">1</div><div class="break-body">Ease in slow — a few sips of salt water, then ½ avocado or a small handful of macadamia nuts.<div class="break-wait">WAIT 20–30 MIN</div></div></div>
 <div class="break-step"><div class="break-num">2</div><div class="break-body">Something small &amp; gentle — 2–3 boiled eggs, a few oz salmon, or ½ avocado.<div class="break-wait">WAIT 1 HOUR</div></div></div>
 <div class="break-step"><div class="break-num">3</div><div class="break-body">Then a normal keto meal. Never break a long fast with a big fatty meal — cramps and nausea.</div></div>
 
@@ -326,8 +332,8 @@
         icon = '🍽️'; text = 'Last bite done · 12 oz salt water · magnesium tonight before bed';
       } else if (h % 12 === 0) {
         var ms = PHASES.filter(function(p){ return p.h === h; })[0];
-        icon = '🍲'; mile = !!ms;
-        text = 'Bone broth (1 cup) + electrolytes' + (h % 24 === 0 ? ' + magnesium' : '');
+        icon = '⚡'; mile = !!ms;
+        text = 'Electrolytes + salt water' + (h % 24 === 0 ? ' + magnesium' : '');
         if (ms) text += ' — <b>' + ms.name + ' done</b>';
       } else {
         var r = h % 12;
@@ -534,8 +540,27 @@
     document.querySelectorAll('.elec-check').forEach(function(b){ b.classList.remove('done'); });
   });
 
+  // Live 72-hour countdown — ticks every second (negligible cost; just one text update).
+  var GOAL_H = 72;
+  function fmtHMS(ms){ var s = Math.floor(ms/1000); return pad(Math.floor(s/3600)) + ':' + pad(Math.floor((s%3600)/60)) + ':' + pad(s%60); }
+  function tickCountdown(){
+    var cd = document.getElementById('countdown'), fill = document.getElementById('cd-fill');
+    var start = getStart();
+    if (!cd) return;
+    if (!start) { cd.textContent = ''; if (fill) fill.style.width = '0%'; return; }
+    var now = Date.now();
+    if (now < start) { cd.innerHTML = '<span class="cd-label">starts soon</span>'; if (fill) fill.style.width = '0%'; return; }
+    var goalMs = start + GOAL_H * 3600000;
+    var remain = goalMs - now;
+    if (remain <= 0) { cd.innerHTML = '🎉 <span class="cd-label">72-hour goal reached</span>'; if (fill) fill.style.width = '100%'; return; }
+    cd.innerHTML = '⏳ ' + fmtHMS(remain) + ' <span class="cd-label">left to 72 h</span>';
+    if (fill) fill.style.width = ((now - start) / (GOAL_H * 3600000) * 100).toFixed(1) + '%';
+  }
+
   render();
-  setInterval(render, 1000 * 30); // update every 30s
+  tickCountdown();
+  setInterval(render, 1000 * 30);   // heavy refresh (phases/schedule) every 30s
+  setInterval(tickCountdown, 1000); // light per-second countdown
 })();
 </script>
 
