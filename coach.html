@@ -63,7 +63,6 @@
 
 <!-- Chat -->
 <div class="scroll hidden" id="scroll"></div>
-<div class="suggest hidden" id="suggest"></div>
 <div class="bar hidden" id="bar">
   <textarea id="input" rows="1" placeholder="Ask your coach…"></textarea>
   <button class="send" id="send">➤</button>
@@ -76,7 +75,6 @@
   var setupEl = document.getElementById('setup');
   var scrollEl = document.getElementById('scroll');
   var barEl = document.getElementById('bar');
-  var suggestEl = document.getElementById('suggest');
   var inputEl = document.getElementById('input');
   var sendEl = document.getElementById('send');
 
@@ -150,16 +148,6 @@
       history.forEach(function(m) { addMsg(m.role, m.content); });
     }
   }
-  var SUGGEST = ["What should I train today?", "Am I hitting my protein this week?", "Swap Friday's WOD for kettlebell-only", "Is my fast going OK?", "Make my week harder"];
-  function renderSuggest() {
-    suggestEl.innerHTML = '';
-    SUGGEST.forEach(function(s) {
-      var b = document.createElement('button'); b.textContent = s;
-      b.onclick = function() { inputEl.value = s; send(); };
-      suggestEl.appendChild(b);
-    });
-  }
-
   // ---------- send ----------
   var busy = false;
   function send() {
@@ -196,14 +184,14 @@
   // ---------- setup flow ----------
   function showSetup() {
     setupEl.classList.remove('hidden');
-    scrollEl.classList.add('hidden'); barEl.classList.add('hidden'); suggestEl.classList.add('hidden');
+    scrollEl.classList.add('hidden'); barEl.classList.add('hidden');
     document.getElementById('cfg-url').value = localStorage.getItem(URL_KEY) || '';
     document.getElementById('cfg-key').value = localStorage.getItem(KEY_KEY) || '';
   }
   function showChat() {
     setupEl.classList.add('hidden');
-    scrollEl.classList.remove('hidden'); barEl.classList.remove('hidden'); suggestEl.classList.remove('hidden');
-    renderHistory(); renderSuggest();
+    scrollEl.classList.remove('hidden'); barEl.classList.remove('hidden');
+    renderHistory();
   }
   document.getElementById('cfg-save').onclick = function() {
     var u = document.getElementById('cfg-url').value.trim().replace(/\/+$/, '');

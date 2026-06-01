@@ -4,7 +4,7 @@
  * pages after redeploys — fixed here.)
  * Bump CACHE on any change to force old caches out.
  */
-const CACHE = 'keto-v34';
+const CACHE = 'keto-v35';
 
 const CORE = [
   'app.html',

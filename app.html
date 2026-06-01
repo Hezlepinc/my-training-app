@@ -108,6 +108,19 @@
   var tabs = Array.from(document.querySelectorAll('.tab'));
   var loaderTimer = null;
 
+  // On-screen keyboard handling: when the keyboard opens, the visual viewport
+  // shrinks. Resize the app to fit it (and keep it pinned to the top) so the chat
+  // input stays just above the keyboard instead of the whole layout shifting.
+  if (window.visualViewport) {
+    var vv = window.visualViewport;
+    var fitViewport = function() {
+      document.body.style.height = vv.height + 'px';
+      window.scrollTo(0, 0);
+    };
+    vv.addEventListener('resize', fitViewport);
+    fitViewport();
+  }
+
   function activate(tab, save) {
     tabs.forEach(function(t){ t.classList.toggle('active', t === tab); });
     if (sectionName) sectionName.textContent = tab.dataset.name;
