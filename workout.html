@@ -34,6 +34,9 @@
   .day-body { display: none; padding: 0 16px 16px; }
   .day-card.open .day-body { display: block; }
 
+  .tpl-card { background: #131318; border: 1px solid #1e1e26; border-radius: 12px; padding: 13px 16px; margin-bottom: 16px; }
+  .tpl-card label { display: block; font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #6ad08a; margin-bottom: 7px; }
+  .tpl-hint { font-size: 0.72rem; color: #666; margin-top: 7px; line-height: 1.4; }
   .type-row { display: flex; align-items: center; gap: 10px; margin: 4px 0 8px; }
   .type-row label { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #5a8aaa; flex-shrink: 0; }
   .type-select { flex: 1; background: #0a0a0d; border: 1px solid #2a2a33; color: #fff; border-radius: 7px; padding: 9px 11px; font-size: 0.9rem; font-family: inherit; }
@@ -78,7 +81,13 @@
 </header>
 
 <div class="intro">
-  <strong>Make it yours:</strong> tap a day, then use the <strong>day-type dropdown</strong> to set what that day is (Lower, Upper, WOD, Run, Rest…). Pick one option per module. On a <strong>WOD day, search the library</strong> to drop in any workout. Your picks + layout save automatically.
+  <strong>Build your own week.</strong> Start from a <strong>split template</strong> below (Push/Pull/Legs, Upper/Lower, Full-Body, CrossFit…), or set each day yourself. Tap a day, use the <strong>day-type dropdown</strong> (Push, Pull, Legs, Hinge, Upper, Lower, WOD, Run…), then pick one option per module. On a <strong>WOD day, search the library</strong>. Everything saves on your phone — your plan is yours, separate from anyone you share the app with.
+</div>
+
+<div class="tpl-card">
+  <label for="tpl">Start from a split template</label>
+  <select id="tpl" class="type-select"></select>
+  <div class="tpl-hint">Loads all 7 days — you can still change any single day after.</div>
 </div>
 
 <h2>Your Week</h2>
@@ -118,6 +127,10 @@
     rest:       { title:'Rest / Mobility',        stress:'s-low',  note:'Easy 20–30 min walk + 10 min mobility on what\'s tight. No lifting, no metcon — recovery is the point.', modules:[] },
     run:        { title:'Medium Run — 2–3 mi',    stress:'s-mod',  note:'Conversational pace, Zone 3. Walk the hills if heart rate spikes. Engine builder, not a race.', modules:[] },
     longrun:    { title:'Long Run',               stress:'s-mod',  note:'Build 3 → 6 mi over months. Slow, Zone 2–3. Walk-run: run until HR climbs, walk until it settles.', modules:[] },
+    conditioning:{ title:'Conditioning / Cardio', stress:'s-mod', modules:[
+      { id:'session', label:'Pick a session', opts:['Row 5×500 m, rest 1 min','Bike/Run 8×30s hard / 90s easy','Run intervals 6×400 m, rest 90s','EMOM 20 — 12-cal row / 12 KB swing / 12 burpee','30 min Zone-2 row, bike or ruck','Jump rope 10×1 min, rest 30s'] },
+      { id:'core', label:'Finisher — core (optional)', opts:['Plank ladder (30-45-60s)','Hollow hold + superman ×3','Hanging knee raises 3×12'] }
+    ]},
     bodyweight: { title:'Bodyweight',             stress:'s-mod',  modules:[
       { id:'session', label:'Pick a session', opts:[
         'Murph — 1 mi run · 100 pull-ups · 200 push-ups · 300 squats · 1 mi run','Half Murph — 800 m · 50 · 100 · 150 · 800 m',
@@ -139,14 +152,55 @@
       { id:'hpull', label:'D — Horizontal pull', opts:['1-arm DB row 3×10/arm','Chest-supported DB row 3×12','Bent-over barbell row 4×8','Inverted row 3×max'] },
       { id:'arms', label:'E — Arms + delts', opts:['DB curls + overhead triceps 3×12','Lateral raises 3×15','Hammer curls + dips 3×12','21s + skullcrushers'] }
     ]},
+    push:       { title:'Push — Chest / Shoulders / Tri', stress:'s-mod', modules:[
+      { id:'hpress', label:'A — Horizontal press', opts:['Bench Press 5×5 @ 70–75%','DB Bench 4×8','Incline Barbell Press 4×6','Weighted Push-up 4×12'] },
+      { id:'vpress', label:'B — Vertical press', opts:['Overhead Press 5×5','Push Press 4×6','DB Shoulder Press 3×10','Arnold Press 3×10'] },
+      { id:'acc', label:'C — Chest / shoulder accessory', opts:['Incline DB Press 3×10','Cable/DB Fly 3×15','Lateral Raises 3×15','Landmine Press 3×10/arm'] },
+      { id:'tri', label:'D — Triceps', opts:['Dips 3×max','Overhead DB Triceps 3×12','Skullcrushers 3×12','Rope/Band Pushdown 3×15'] }
+    ]},
+    pull:       { title:'Pull — Back / Biceps',    stress:'s-mod', modules:[
+      { id:'vpull', label:'A — Vertical pull', opts:['Pull-ups 4×max','Weighted Pull-ups 5×5','Lat Pulldown 4×10','Banded Pull-ups 4×8'] },
+      { id:'hpull', label:'B — Horizontal pull (row)', opts:['Barbell Row 4×8','1-arm DB Row 3×10/arm','Chest-supported Row 3×12','Inverted Row 3×max'] },
+      { id:'rear', label:'C — Posterior / rear delt', opts:['Face Pulls 3×15','Rear-delt Fly 3×15','DB Pullover 3×12','Shrugs 3×15'] },
+      { id:'bi', label:'D — Biceps', opts:['Barbell Curl 3×10','Hammer Curls 3×12','Incline DB Curl 3×12','21s'] }
+    ]},
+    legs:       { title:'Legs — Quads / Hams / Glutes', stress:'s-high', modules:[
+      { id:'squat', label:'A — Squat', opts:['Back Squat 5×5 @ 70–75%','Front Squat 4×6','Goblet Squat 4×12','Hack / Leg Press 4×12'] },
+      { id:'hinge', label:'B — Hinge', opts:['Romanian Deadlift 4×10','Hip Thrust 4×12','Good Morning 3×10','KB/DB Swing 4×15'] },
+      { id:'uni', label:'C — Unilateral', opts:['Bulgarian Split Squat 3×10/leg','Walking Lunge 3×12/leg','Step-up 3×10/leg','Reverse Lunge 3×10/leg'] },
+      { id:'calf', label:'D — Calves + core', opts:['Calf Raise 3×20','Hanging Knee Raise 3×12','Weighted Carry 3×40 m','Plank ladder 30-45-60s'] }
+    ]},
+    hinge:      { title:'Hinge — Deadlift / Posterior', stress:'s-high', modules:[
+      { id:'dl', label:'A — Main deadlift (heavy)', opts:['Deadlift 5×3 @ 80%','Deadlift 5×5 @ 70%','Trap-bar Deadlift 4×6','Sumo Deadlift 5×3','Deficit Deadlift 4×4'] },
+      { id:'acc', label:'B — Hip-hinge accessory', opts:['Romanian Deadlift 3×10','Hip Thrust 4×12','Good Morning 3×10','KB/DB Swing 4×20'] },
+      { id:'uni', label:'C — Posterior unilateral', opts:['Single-leg RDL 3×10/leg','B-stance Hip Thrust 3×12','Back Extension 3×15','Walking Lunge 3×12/leg'] },
+      { id:'grip', label:'D — Grip + core', opts:['Farmer Carry 3×40 m','Hanging Leg Raise 3×12','Weighted Plank 3×45s','Suitcase Carry 3×30 m/side'] }
+    ]},
+    fullbody:   { title:'Full Body',               stress:'s-mod', modules:[
+      { id:'legs', label:'A — Squat or hinge', opts:['Back Squat 4×6','Deadlift 4×5','Front Squat 4×8','Goblet Squat 4×12'] },
+      { id:'press', label:'B — Press', opts:['Bench Press 4×6','Overhead Press 4×6','DB Bench 4×8','Push-ups 4×15'] },
+      { id:'pull', label:'C — Pull', opts:['Pull-ups 4×max','Barbell Row 4×8','1-arm DB Row 3×10/arm','Lat Pulldown 4×10'] },
+      { id:'fin', label:'D — Conditioning finisher (optional)', opts:['10 min EMOM — KB swing / burpee','Row 5×250 m','Tabata bike / run','100 burpees for time'] }
+    ]},
     wod:        { title:'WOD',                     stress:'s-high', modules:[
       { id:'skill', label:'Skill primer (oly/OHS lives here)', opts:['Overhead Squat 5×3 (light)','Snatch technique 6×2','Clean technique 6×2','Pistol progression 10 min','Double-under practice 10 min','Handstand holds / wall walks','Skip skill — straight to WOD'] },
       { id:'wod', label:'Pick a WOD (search the library)', wod:true }
     ]}
   };
 
-  var TYPE_ORDER = ['bodyweight','lower','run','upper','wod','longrun','rest'];
-  var TYPE_NAMES = { bodyweight:'Bodyweight', lower:'Lower / Squat', run:'Medium Run', upper:'Upper Body', wod:'WOD', longrun:'Long Run', rest:'Rest / Mobility' };
+  // Dropdown order + short labels for the per-day picker
+  var TYPE_ORDER = ['lower','upper','push','pull','legs','hinge','fullbody','bodyweight','wod','conditioning','run','longrun','rest'];
+  var TYPE_NAMES = { lower:'Lower / Squat', upper:'Upper Body', push:'Push', pull:'Pull', legs:'Legs', hinge:'Hinge / Deadlift', fullbody:'Full Body', bodyweight:'Bodyweight', wod:'WOD', conditioning:'Conditioning', run:'Medium Run', longrun:'Long Run', rest:'Rest / Mobility' };
+
+  // Whole-week split templates — load one, then tweak any day
+  var TEMPLATES = {
+    hybrid:    { name:'John’s Hybrid (default)', layout:{ mon:'bodyweight', tue:'lower', wed:'run', thu:'upper', fri:'wod', sat:'longrun', sun:'rest' } },
+    ppl:       { name:'Push / Pull / Legs (6-day)',   layout:{ mon:'push', tue:'pull', wed:'legs', thu:'push', fri:'pull', sat:'legs', sun:'rest' } },
+    ul:        { name:'Upper / Lower (4-day)',        layout:{ mon:'upper', tue:'lower', wed:'conditioning', thu:'upper', fri:'lower', sat:'longrun', sun:'rest' } },
+    fullbody3: { name:'Full Body (3-day)',            layout:{ mon:'fullbody', tue:'rest', wed:'fullbody', thu:'conditioning', fri:'fullbody', sat:'run', sun:'rest' } },
+    crossfit:  { name:'CrossFit / WOD focus',         layout:{ mon:'wod', tue:'run', wed:'wod', thu:'upper', fri:'wod', sat:'longrun', sun:'rest' } }
+  };
+
   var DAYS = [['mon','Monday'],['tue','Tuesday'],['wed','Wednesday'],['thu','Thursday'],['fri','Friday'],['sat','Saturday'],['sun','Sunday']];
   var DEFAULT_LAYOUT = { mon:'bodyweight', tue:'lower', wed:'run', thu:'upper', fri:'wod', sat:'longrun', sun:'rest' };
   var WODS = window.WODS || [];
@@ -304,6 +358,22 @@
       done = {}; setJSON(DONE_KEY, done);
       weekEl.querySelectorAll('.day-card').forEach(function(c){ c.classList.remove('done'); });
     }
+  };
+
+  // Split-template picker
+  var tplEl = document.getElementById('tpl');
+  var tplHTML = '<option value="">— choose a template —</option>';
+  Object.keys(TEMPLATES).forEach(function(k){ tplHTML += '<option value="' + k + '">' + TEMPLATES[k].name + '</option>'; });
+  tplEl.innerHTML = tplHTML;
+  tplEl.onchange = function() {
+    var k = tplEl.value;
+    if (!k || !TEMPLATES[k]) return;
+    if (confirm('Load the “' + TEMPLATES[k].name + '” template? This sets all 7 day types. Your saved picks for each type stay — you can still change any day after.')) {
+      layout = Object.assign({}, TEMPLATES[k].layout);
+      setJSON(LAYOUT_KEY, layout);
+      buildWeek();
+    }
+    tplEl.value = '';
   };
 
   buildWeek();

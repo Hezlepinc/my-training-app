@@ -73,7 +73,7 @@
   <div class="adv-panel" id="adv-panel">
     <div class="flabel">Format</div>
     <div class="chips" id="fmt-chips"></div>
-    <div class="flabel">Equipment used</div>
+    <div class="flabel">Equipment you have — shows only WODs you can do with all of it</div>
     <div class="chips" id="eq-chips"></div>
   </div>
 </div>
@@ -154,7 +154,8 @@
       if (selCat !== 'all' && w[4] !== selCat) return false;
       if (filter && w[0].toLowerCase().indexOf(filter) === -1 && w[1].toLowerCase().indexOf(filter) === -1 && w[3].toLowerCase().indexOf(filter) === -1) return false;
       if (fmtActive && !selFmt[w[1]]) return false;
-      if (eqActive && !w[2].some(function(e){ return selEq[e]; })) return false;
+      // Equipment = "what I have": show a WOD only if EVERY piece of gear it needs is selected (100% match).
+      if (eqActive && !w[2].every(function(e){ return selEq[e]; })) return false;
       return true;
     });
     countEl.textContent = shown.length + ' WOD' + (shown.length === 1 ? '' : 's');

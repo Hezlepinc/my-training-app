@@ -68,9 +68,9 @@
 
   var DAYS = [['mon','Monday'],['tue','Tuesday'],['wed','Wednesday'],['thu','Thursday'],['fri','Friday'],['sat','Saturday'],['sun','Sunday']];
   var DEFAULT_LAYOUT = { mon:'bodyweight', tue:'lower', wed:'run', thu:'upper', fri:'wod', sat:'longrun', sun:'rest' };
-  var TITLE = { bodyweight:'Bodyweight', lower:'Lower — Squat', run:'Medium Run — 2–3 mi', upper:'Upper Body', wod:'WOD', longrun:'Long Run', rest:'Rest / Mobility' };
-  var STRESS = { bodyweight:'s-mod', lower:'s-high', run:'s-mod', upper:'s-mod', wod:'s-high', longrun:'s-mod', rest:'s-low' };
-  var NOTE = { run:'Conversational pace, Zone 3.', longrun:'Build 3 → 6 mi, Zone 2–3.', rest:'Walk + mobility. No lifting.' };
+  var TITLE = { bodyweight:'Bodyweight', lower:'Lower — Squat', upper:'Upper Body', push:'Push', pull:'Pull', legs:'Legs', hinge:'Hinge — Deadlift', fullbody:'Full Body', wod:'WOD', conditioning:'Conditioning', run:'Medium Run — 2–3 mi', longrun:'Long Run', rest:'Rest / Mobility' };
+  var STRESS = { bodyweight:'s-mod', lower:'s-high', upper:'s-mod', push:'s-mod', pull:'s-mod', legs:'s-high', hinge:'s-high', fullbody:'s-mod', wod:'s-high', conditioning:'s-mod', run:'s-mod', longrun:'s-mod', rest:'s-low' };
+  var NOTE = { run:'Conversational pace, Zone 3.', longrun:'Build 3 → 6 mi, Zone 2–3.', conditioning:'Intervals or Zone-2 cardio.', rest:'Walk + mobility. No lifting.' };
 
   function getJSON(k, d){ try { return JSON.parse(localStorage.getItem(k)) || d; } catch(e){ return d; } }
   function setJSON(k, v){ localStorage.setItem(k, JSON.stringify(v)); }

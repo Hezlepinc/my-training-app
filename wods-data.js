@@ -105,17 +105,93 @@ window.WODS = [
   ["Thompson","RFT",["Pull-up bar","Barbell"],"10 rounds: 1 rope climb (15 ft), 29 back squats (95), 10 m barbell farmer carry (135/hand).","hero"],
   ["Kalsu","For Time",["Barbell","Bodyweight"],"100 thrusters (135) for time — start each minute (incl. min 0) with 5 burpees, then thrusters.","hero"],
 
-  // ============ CROSSFIT OPEN / GAMES BENCHMARKS ============
-  ["Open 14.1","AMRAP",["Jump rope","Barbell"],"10 min AMRAP: 30 double-unders, 15 power snatches (75). (Also 11.1.)","open"],
+  // ============ CROSSFIT OPEN — every year, 2011–2025 ============
+  // 2011
+  ["Open 11.1","AMRAP",["Jump rope","Barbell"],"10 min AMRAP: 30 double-unders, 15 power snatches (75).","open"],
+  ["Open 11.2","AMRAP",["Barbell","Bodyweight","Box"],"15 min AMRAP: 9 deadlifts (155), 12 push-ups, 15 box jumps (24).","open"],
+  ["Open 11.3","AMRAP",["Barbell"],"5 min AMRAP: max squat clean & jerks (165).","open"],
+  ["Open 11.4","AMRAP",["Bodyweight","Barbell","Pull-up bar"],"10 min AMRAP: 60 bar-facing burpees, 30 OHS (120), 10 muscle-ups.","open"],
+  ["Open 11.5","AMRAP",["Barbell","Pull-up bar","Wall ball"],"20 min AMRAP: 5 power cleans (145), 10 toes-to-bar, 15 wall balls (20).","open"],
+  ["Open 11.6","AMRAP",["Barbell","Pull-up bar"],"7 min AMRAP ladder: 3-6-9… thrusters (100) + chest-to-bar pull-ups, +3 each round.","open"],
+  // 2012
+  ["Open 12.1","AMRAP",["Bodyweight"],"7 min AMRAP: burpees (jump and touch a target 6 in overhead).","open"],
+  ["Open 12.2","AMRAP",["Barbell"],"10 min AMRAP: 30 snatches (75), 30 (135), 30 (165), then max snatches (210).","open"],
+  ["Open 12.3","AMRAP",["Box","Barbell","Pull-up bar"],"18 min AMRAP: 15 box jumps (24), 12 push press (115), 9 toes-to-bar.","open"],
+  ["Open 12.4","AMRAP",["Wall ball","Jump rope","Pull-up bar"],"12 min AMRAP: 150 wall balls (20), 90 double-unders, 30 muscle-ups.","open"],
+  ["Open 12.5","AMRAP",["Barbell","Pull-up bar"],"7 min AMRAP ladder: 3-6-9… thrusters (100) + chest-to-bar pull-ups, +3 each round.","open"],
+  // 2013
+  ["Open 13.1","AMRAP",["Bodyweight","Barbell"],"17 min AMRAP: 40 burpees, 30 snatches (75), 30 burpees, 30 snatches (135), 20 burpees, 30 snatches (165), 10 burpees, max snatches (210).","open"],
+  ["Open 13.2","AMRAP",["Barbell","Box"],"10 min AMRAP: 5 shoulder-to-overhead (115), 10 deadlifts (115), 15 box jumps (24).","open"],
+  ["Open 13.3","AMRAP",["Wall ball","Jump rope","Pull-up bar"],"12 min AMRAP: 150 wall balls (20), 90 double-unders, 30 muscle-ups.","open"],
+  ["Open 13.4","AMRAP",["Barbell","Pull-up bar"],"7 min AMRAP ladder: 3-3-6-6… clean & jerks (135) + toes-to-bar, +3 each.","open"],
+  ["Open 13.5","For Time",["Barbell","Pull-up bar"],"4 min couplet: 15 thrusters (100) + 15 chest-to-bar; hit 90 reps to earn 4 more min (and so on).","open"],
+  // 2014
+  ["Open 14.1","AMRAP",["Jump rope","Barbell"],"10 min AMRAP: 30 double-unders, 15 power snatches (75).","open"],
+  ["Open 14.2","AMRAP",["Barbell","Pull-up bar"],"Every 3 min: 2 rounds of 10 OHS (95) + 10 C2B, then +2 reps per round until you stall.","open"],
+  ["Open 14.3","AMRAP",["Barbell","Box"],"8 min AMRAP: 10 deadlifts (135) + 15 box jumps (24); deadlift climbs 185/225/275/315, 15 box jumps each.","open"],
   ["Open 14.4","AMRAP",["Rower","Pull-up bar","Wall ball","Barbell"],"14 min AMRAP chipper: 60-cal row, 50 toes-to-bar, 40 wall balls (20), 30 cleans (135), 20 muscle-ups.","open"],
-  ["Open 14.5","For Time",["Barbell","Bodyweight"],"21-18-15-12-9-6-3: thrusters (95) + bar-facing burpees. No time cap — just finish. (Also 16.5.)","open"],
-  ["Open 16.4","AMRAP",["Barbell","Wall ball","Rower","Bodyweight"],"13 min AMRAP: 55 deadlifts (225), 55 wall balls (20), 55-cal row, 55 HSPU. (Also 17.4.)","open"],
+  ["Open 14.5","For Time",["Barbell","Bodyweight"],"21-18-15-12-9-6-3: thrusters (95) + bar-facing burpees. No time cap.","open"],
+  // 2015
+  ["Open 15.1","AMRAP",["Pull-up bar","Barbell"],"9 min AMRAP: 15 toes-to-bar, 10 deadlifts (115), 5 snatches (115). Then 15.1a: 6 min to a 1RM clean & jerk.","open"],
+  ["Open 15.2","AMRAP",["Barbell","Pull-up bar"],"Every 3 min: 2 rounds of 10 OHS (95) + 10 C2B, +2 reps per round until you stall.","open"],
+  ["Open 15.3","AMRAP",["Pull-up bar","Wall ball","Jump rope"],"14 min AMRAP: 7 muscle-ups, 50 wall balls (20), 100 double-unders.","open"],
+  ["Open 15.4","AMRAP",["Bodyweight","Barbell"],"8 min AMRAP ladder: 3-6-9… HSPU + cleans (185), cleans climb every 3 rounds.","open"],
+  ["Open 15.5","For Time",["Rower","Barbell"],"27-21-15-9: row (cals) + thrusters (95).","open"],
+  // 2016
+  ["Open 16.1","AMRAP",["Barbell","Bodyweight","Pull-up bar"],"20 min AMRAP: 25-ft OH walking lunge (95), 8 bar-facing burpees, 25-ft OH lunge, 8 chest-to-bar.","open"],
+  ["Open 16.2","AMRAP",["Pull-up bar","Jump rope","Barbell"],"Ascending 4-min blocks: 25 toes-to-bar, 50 DU, then 15/13/11/9/7 squat cleans climbing 135→315.","open"],
+  ["Open 16.3","AMRAP",["Barbell","Pull-up bar"],"7 min AMRAP: 10 power snatches (75), 3 bar muscle-ups.","open"],
+  ["Open 16.4","AMRAP",["Barbell","Wall ball","Rower","Bodyweight"],"13 min AMRAP: 55 deadlifts (225), 55 wall balls (20), 55-cal row, 55 HSPU.","open"],
+  ["Open 16.5","For Time",["Barbell","Bodyweight"],"21-18-15-12-9-6-3: thrusters (95) + bar-facing burpees.","open"],
+  // 2017
+  ["Open 17.1","For Time",["Dumbbells","Box"],"20 min cap: 10-20-30-40-50 DB snatches (50) with 15 burpee box jump-overs (24) after each set.","open"],
+  ["Open 17.2","AMRAP",["Dumbbells","Pull-up bar"],"12 min AMRAP: 2 rounds [50-ft DB lunge (50s), 16 toes-to-bar, 8 DB power cleans], then sub bar muscle-ups for T2B.","open"],
+  ["Open 17.3","For Time",["Pull-up bar","Barbell"],"Escalating caps: 3 rounds of 6 chest-to-bar + 6 squat snatches (95), then heavier snatches / more reps as you advance.","open"],
+  ["Open 17.4","AMRAP",["Barbell","Wall ball","Rower","Bodyweight"],"13 min AMRAP: 55 deadlifts (225), 55 wall balls (20), 55-cal row, 55 HSPU.","open"],
   ["Open 17.5","RFT",["Barbell","Jump rope"],"10 rounds: 9 thrusters (95), 35 double-unders.","open"],
+  // 2018
+  ["Open 18.1","AMRAP",["Pull-up bar","Dumbbells","Rower"],"20 min AMRAP: 8 toes-to-bar, 10 DB hang clean & jerk (50), 14-cal row.","open"],
+  ["Open 18.2","For Time",["Dumbbells","Bodyweight","Barbell"],"For time: 1-2-3…10 DB squats (50s) + bar-facing burpees; then 18.2a: build to a 1RM clean (12 min total).","open"],
+  ["Open 18.3","For Time",["Jump rope","Barbell","Pull-up bar","Dumbbells"],"14 min cap, 2 rounds: 100 DU, 20 OHS (115), 100 DU, 12 ring muscle-ups, 100 DU, 20 DB snatches (50), 100 DU, 12 bar muscle-ups.","open"],
+  ["Open 18.4","For Time",["Barbell","Bodyweight"],"9 min cap: 21-15-9 deadlifts (225) + HSPU, then 21-15-9 deadlifts (315) + 50-ft handstand walks.","open"],
+  ["Open 18.5","AMRAP",["Barbell","Pull-up bar"],"7 min AMRAP ladder: 3-6-9… thrusters (100) + chest-to-bar pull-ups.","open"],
+  // 2019
   ["Open 19.1","AMRAP",["Wall ball","Rower"],"15 min AMRAP: 19 wall balls (20), 19-cal row.","open"],
-  ["Triple 3","For Time",["Rower","Jump rope","Bodyweight"],"3000 m row, 300 double-unders, 3 mi run. A Games engine test.","open"],
-  ["CrossFit Total","For Time",["Barbell"],"Best of 3 attempts each: 1RM back squat + 1RM shoulder press + 1RM deadlift. Score = the sum.","open"],
+  ["Open 19.2","AMRAP",["Pull-up bar","Jump rope","Barbell"],"Ascending 4-min blocks: 25 toes-to-bar, 50 DU, 15/13/11/9/7 squat cleans 135→315.","open"],
+  ["Open 19.3","For Time",["Dumbbells","Box","Bodyweight"],"10 min cap: 200-ft DB OH lunge (50), 50 DB box step-ups (24), 50 strict HSPU, 200-ft handstand walk.","open"],
+  ["Open 19.4","For Time",["Barbell","Bodyweight","Pull-up bar"],"12 min cap: 3 rounds [10 snatches (95), 12 bar-facing burpees], rest 3 min, 3 rounds [10 bar muscle-ups, 12 burpees].","open"],
+  ["Open 19.5","For Time",["Barbell","Pull-up bar"],"20 min cap: 33-27-21-15-9 thrusters (95) + chest-to-bar pull-ups.","open"],
+  // 2020
+  ["Open 20.1","RFT",["Barbell","Bodyweight"],"15 min cap, 10 rounds: 8 ground-to-overhead (95), 10 bar-facing burpees.","open"],
+  ["Open 20.2","AMRAP",["Dumbbells","Pull-up bar","Jump rope"],"20 min AMRAP: 4 DB thrusters (50s), 6 toes-to-bar, 24 double-unders.","open"],
+  ["Open 20.3","For Time",["Barbell","Bodyweight"],"9 min cap: 21-15-9 deadlifts (225) + HSPU, then 21-15-9 deadlifts (315) + 50-ft handstand walks.","open"],
+  ["Open 20.4","For Time",["Box","Barbell","Bodyweight"],"20 min cap: 30 box jumps (24) + clean & jerks climbing 95→315, with single-leg squats replacing box jumps mid-way.","open"],
+  ["Open 20.5","For Time",["Pull-up bar","Rower","Wall ball"],"20 min cap, any order: 40 muscle-ups, 80-cal row, 120 wall balls (20).","open"],
+  // 2021
+  ["Open 21.1","For Time",["Bodyweight","Jump rope"],"15 min cap, ascending: 1 wall walk + 10 DU, 3+30, 6+60, 9+90, 15+150, 21+210.","open"],
+  ["Open 21.2","For Time",["Dumbbells","Box"],"20 min cap: 10-20-30-40-50 DB snatches (50) with 15 burpee box jump-overs (24) after each set.","open"],
+  ["Open 21.3","For Time",["Barbell","Pull-up bar"],"Time caps: 15 front squats (95), 30 toes-to-bar, 15 thrusters; repeat subbing C2B, then bar muscle-ups.","open"],
+  ["Open 21.4","For Time",["Barbell"],"Right after 21.3: 7 min to build a 1RM complex — deadlift + clean + hang clean + jerk.","open"],
+  // 2022
+  ["Open 22.1","AMRAP",["Bodyweight","Dumbbells","Box"],"15 min AMRAP: 3 wall walks, 12 DB snatches (50), 15 box jump-overs (24).","open"],
+  ["Open 22.2","For Time",["Barbell","Bodyweight"],"10 min cap: 1-2-3…10-9…1 ladder of deadlifts (225) + bar-facing burpees.","open"],
+  ["Open 22.3","For Time",["Pull-up bar","Jump rope","Barbell"],"12 min cap: 21 pull-ups, 42 DU, 21 thrusters (95); 18 C2B, 36 DU, 18 thrusters (115); 15 bar MU, 30 DU, 15 thrusters (135).","open"],
+  // 2023
+  ["Open 23.1","AMRAP",["Rower","Pull-up bar","Wall ball","Barbell"],"14 min AMRAP: 60-cal row, 50 toes-to-bar, 40 wall balls (20), 30 cleans (135), 20 muscle-ups.","open"],
+  ["Open 23.2","AMRAP",["Pull-up bar","Bodyweight","Barbell"],"23.2a: 15 min AMRAP — ascending 5 burpee pull-ups + 10 shuttle runs (+5 burpee pull-ups each round). 23.2b: 5 min to a 1RM thruster.","open"],
+  ["Open 23.3","For Time",["Bodyweight","Jump rope","Barbell"],"Progressive caps: 5 wall walks, 50 DU, 15 snatches (95); 5 ww, 50 DU, 12 snatches (135); then 20 strict HSPU, 50 DU, 9 snatches (185); then 6 snatches (225).","open"],
+  // 2024
+  ["Open 24.1","For Time",["Dumbbells","Bodyweight"],"15 min cap: 21-15-9 (per arm) DB snatches (50) with 21-15-9 lateral burpees over the DB between arms.","open"],
+  ["Open 24.2","AMRAP",["Rower","Barbell","Jump rope"],"20 min AMRAP: 300 m row, 10 deadlifts (185), 50 double-unders.","open"],
+  ["Open 24.3","For Time",["Barbell","Pull-up bar"],"15 min cap: 5 rounds [10 thrusters (95), 10 chest-to-bar], rest 1 min, 5 rounds [7 thrusters (135), 7 bar muscle-ups].","open"],
+  // 2025
+  ["Open 25.1","AMRAP",["Dumbbells","Bodyweight"],"15 min AMRAP, ascending: 3 lateral burpees over DB + 3 DB hang clean-to-overhead (50) + 30-ft walking lunge; +3 reps each round.","open"],
+  ["Open 25.2","For Time",["Pull-up bar","Jump rope","Barbell"],"12 min cap: 21 pull-ups, 42 DU, 21 thrusters (95); 18 C2B, 36 DU, 18 thrusters (115); 15 bar MU, 30 DU, 15 thrusters (135).","open"],
+  ["Open 25.3","For Time",["Bodyweight","Rower","Barbell"],"20 min cap: wall walks, two 50-cal rows, and a barbell ladder of deadlifts → cleans → snatches (25 reps each).","open"],
 
   // ============ OTHER / minimal-equipment / formats ============
+  ["Triple 3","For Time",["Rower","Jump rope","Bodyweight"],"3000 m row, 300 double-unders, 3 mi run. A Games-style engine test.","other"],
+  ["CrossFit Total","For Time",["Barbell"],"Best of 3 attempts each: 1RM back squat + 1RM shoulder press + 1RM deadlift. Score = the sum.","other"],
   ["Fight Gone Bad","For Time",["Wall ball","Barbell","Box","Rower"],"3 rounds, 5 stations × 1 min: wall ball (20), SDHP (75), box jump (20), push press (75), row (cals). 1 min rest between rounds.","other"],
   ["Filthy Fifty","Chipper",["Box","Pull-up bar","Kettlebell","Wall ball","Jump rope"],"50 reps each: box jumps, jumping pull-ups, KB swings, walking lunges, knees-to-elbow, push press (45), back ext, wall balls, burpees, double-unders.","other"],
   ["Tabata This","Tabata",["Bodyweight","Rower","Pull-up bar"],"Tabata (20s on/10s off ×8) of row, squats, pull-ups, push-ups, sit-ups. Lowest round scores each.","other"],
