@@ -36,6 +36,7 @@ window.WODS = [
 
   // ============ HERO WODs ============
   ["Murph","For Time",["Pull-up bar","Bodyweight"],"1 mi run, 100 pull-ups, 200 push-ups, 300 squats, 1 mi run. Vest optional. Partition the middle.","hero"],
+  ["Half Murph","For Time",["Pull-up bar","Bodyweight"],"800 m run, 50 pull-ups, 100 push-ups, 150 squats, 800 m run. Partition the middle.","hero"],
   ["DT","RFT",["Barbell"],"5 rounds: 12 deadlifts, 9 hang power cleans, 6 push jerks (155).","hero"],
   ["The Chief","AMRAP",["Barbell","Bodyweight"],"5 cycles of 3 min AMRAP: 3 power cleans (135), 6 push-ups, 9 squats. 1 min rest between.","hero"],
   ["JT","For Time",["Bodyweight"],"21-15-9: handstand push-ups, ring dips, push-ups.","hero"],
@@ -215,3 +216,19 @@ window.WODS = [
   ["AMRAP 20","AMRAP",["Bodyweight"],"Build your own 20 min AMRAP from 3 movements you choose.","other"],
   ["EMOM 24","EMOM",["Bodyweight"],"24 min, rotate 3 movements each minute (8 rounds).","other"]
 ];
+
+/* Shared formatter: turn a one-line WOD description into bulleted movements.
+ * Splits a leading "<scheme>:" header off, then breaks the rest on commas /
+ * plus-signs / middots into line-by-line bullets. Returns HTML. */
+window.wodBullets = function(desc){
+  if (!desc) return '';
+  var head = '', body = desc;
+  var ci = desc.indexOf(': ');
+  if (ci > -1 && ci < 44) { head = desc.slice(0, ci); body = desc.slice(ci + 2); }
+  var items = body.split(/,\s|\s\+\s|\s·\s/).map(function(s){ return s.trim(); }).filter(Boolean);
+  var html = '';
+  if (head) html += '<div class="wb-head">' + head + '</div>';
+  if (items.length > 1) html += '<ul class="wb-list">' + items.map(function(it){ return '<li>' + it + '</li>'; }).join('') + '</ul>';
+  else html += '<div class="wb-line">' + body + '</div>';
+  return html;
+};

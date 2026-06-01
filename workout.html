@@ -65,6 +65,19 @@
   .wod-opt .wo-fmt { font-size: 0.58rem; font-weight: 800; text-transform: uppercase; color: #8ce0a8; margin-left: 6px; }
   .wod-opt .wo-desc { font-size: 0.74rem; color: #888; margin-top: 2px; line-height: 1.35; }
   .wod-hint { font-size: 0.72rem; color: #666; margin-top: 4px; }
+  .multi-hint { font-size: 0.6rem; color: #5a8aaa; font-style: italic; margin: -2px 0 6px; }
+  .wc-desc .wb-head { font-weight: 700; color: #cdeacd; margin-bottom: 3px; }
+  .wc-desc .wb-list { margin: 0; padding-left: 17px; }
+  .wc-desc .wb-list li { margin: 2px 0; line-height: 1.4; }
+  .fast-ov { background: #1f1a0e; border: 1px solid #6a5a2a; border-radius: 12px; padding: 15px 17px; margin-bottom: 16px; }
+  .fast-ov.mini { padding: 11px 15px; font-size: 0.84rem; color: #d8c89a; }
+  .fo-h { font-size: 0.96rem; font-weight: 800; color: #f0d890; margin-bottom: 6px; }
+  .fo-p { font-size: 0.82rem; color: #cbbf9f; line-height: 1.55; margin: 8px 0; }
+  .fo-p b, .fo-list b { color: #f0d890; }
+  .fo-lbl { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #c0a850; margin-top: 10px; }
+  .fo-list { margin: 6px 0 0; padding-left: 18px; }
+  .fo-list li { font-size: 0.84rem; color: #d8d0c0; line-height: 1.5; margin: 4px 0; }
+  .fo-toggle { margin-top: 11px; background: #2a2418; border: 1px solid #5a4a28; color: #e0c878; border-radius: 8px; padding: 8px 13px; font-size: 0.76rem; font-weight: 700; cursor: pointer; font-family: inherit; }
 
   .info-card { background: #131318; border: 1px solid #1e1e26; border-radius: 10px; padding: 15px; font-size: 0.83rem; color: #bbb; line-height: 1.6; margin-bottom: 8px; }
   .info-card .lbl { color: #6ad08a; font-weight: 700; }
@@ -83,6 +96,8 @@
 <div class="intro">
   <strong>Build your own week.</strong> Start from a <strong>split template</strong> below (Push/Pull/Legs, Upper/Lower, Full-Body, CrossFit…), or set each day yourself. Tap a day, use the <strong>day-type dropdown</strong> (Push, Pull, Legs, Hinge, Upper, Lower, WOD, Run…), then pick one option per module. On a <strong>WOD day, search the library</strong>. Everything saves on your phone — your plan is yours, separate from anyone you share the app with.
 </div>
+
+<div id="fast-override"></div>
 
 <div class="tpl-card">
   <label for="tpl">Start from a split template</label>
@@ -131,12 +146,8 @@
       { id:'session', label:'Pick a session', opts:['Row 5×500 m, rest 1 min','Bike/Run 8×30s hard / 90s easy','Run intervals 6×400 m, rest 90s','EMOM 20 — 12-cal row / 12 KB swing / 12 burpee','30 min Zone-2 row, bike or ruck','Jump rope 10×1 min, rest 30s'] },
       { id:'core', label:'Finisher — core (optional)', opts:['Plank ladder (30-45-60s)','Hollow hold + superman ×3','Hanging knee raises 3×12'] }
     ]},
-    bodyweight: { title:'Bodyweight',             stress:'s-mod',  modules:[
-      { id:'session', label:'Pick a session', opts:[
-        'Murph — 1 mi run · 100 pull-ups · 200 push-ups · 300 squats · 1 mi run','Half Murph — 800 m · 50 · 100 · 150 · 800 m',
-        'Cindy — 20 min AMRAP: 5 pull-ups, 10 push-ups, 15 squats','Mary (scaled) — 20 min AMRAP: 3 wall-walks, 10 alt pistols, 15 pull-ups',
-        'Chipper — 50 squats, 40 lunges, 30 push-ups, 20 sit-ups, 10 burpees, 100 jump rope','Tabata Mix — squats / push-ups / mt. climbers / hollow (8×20-10)',
-        'Ladder — run 400 m, 10→1 push-ups + squats, run 400 m' ]},
+    bodyweight: { title:'Bodyweight',             stress:'s-mod', note:'Pick any bodyweight-style WOD — Murph, Half Murph, Cindy, Angie, Barbara, and more (browse the list or search). Then an optional core finisher.', modules:[
+      { id:'wod', label:'Pick a bodyweight WOD (browse or search)', wod:true, equip:['Bodyweight','Pull-up bar','Jump rope','Box'] },
       { id:'core', label:'Finisher — core (optional)', opts:['Plank ladder (30-45-60s)','Hollow hold + superman ×3','Hanging knee raises 3×12'] }
     ]},
     lower:      { title:'Lower — Squat Strength',  stress:'s-high', modules:[
@@ -207,6 +218,8 @@
 
   function getJSON(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch(e) { return d; } }
   function setJSON(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+  // Picks can now hold MULTIPLE selections per module — normalize old single-string saves to arrays.
+  function asArr(v) { return Array.isArray(v) ? v : (v != null && v !== '' ? [v] : []); }
   var layout = Object.assign({}, DEFAULT_LAYOUT, getJSON(LAYOUT_KEY, {}));
   var picks = getJSON(PICKS_KEY, {});
   var done = getJSON(DONE_KEY, {});
@@ -226,12 +239,13 @@
       html += '</div>';
       return html;
     }
-    var sel = picks[day + ':' + mod.id];
+    var selArr = asArr(picks[day + ':' + mod.id]);
     var opts = mod.opts.map(function(o) {
-      var on = (o === sel) ? ' sel' : '';
+      var on = (selArr.indexOf(o) > -1) ? ' sel' : '';
       return '<div class="opt' + on + '" data-day="' + day + '" data-mod="' + mod.id + '" data-val="' + o.replace(/"/g,'&quot;') + '"><div class="pick"></div><div>' + o + '</div></div>';
     }).join('');
-    return '<div class="module"><div class="module-label">' + mod.label + '</div>' + opts + '</div>';
+    var hint = mod.opts.length > 1 ? '<div class="multi-hint">tap one or more</div>' : '';
+    return '<div class="module"><div class="module-label">' + mod.label + '</div>' + hint + opts + '</div>';
   }
 
   function wodChosenHTML(name) {
@@ -241,7 +255,7 @@
     var fmt = w ? w[1] : '';
     return '<div class="wod-chosen"><span class="wc-clear" data-clear="1">clear</span><span class="wc-name">' + name + '</span>' +
       (fmt ? ' <span style="font-size:0.62rem;color:#8ce0a8;font-weight:800;">' + fmt + '</span>' : '') +
-      (desc ? '<div class="wc-desc">' + desc + '</div>' : '') + '</div>';
+      (desc ? '<div class="wc-desc">' + (window.wodBullets ? window.wodBullets(desc) : desc) + '</div>' : '') + '</div>';
   }
 
   function bodyHTML(day) {
@@ -310,17 +324,19 @@
     // module options
     weekEl.querySelectorAll('.opt').forEach(function(opt) {
       opt.onclick = function() {
-        var day = opt.dataset.day, mod = opt.dataset.mod, val = opt.dataset.val;
-        var key = day + ':' + mod;
-        var mods = opt.parentNode;
-        if (picks[key] === val) { delete picks[key]; opt.classList.remove('sel'); }
-        else { picks[key] = val; mods.querySelectorAll('.opt').forEach(function(o){ o.classList.remove('sel'); }); opt.classList.add('sel'); }
+        var key = opt.dataset.day + ':' + opt.dataset.mod, val = opt.dataset.val;
+        var arr = asArr(picks[key]);     // multi-select: toggle this option in/out
+        var i = arr.indexOf(val);
+        if (i > -1) { arr.splice(i, 1); opt.classList.remove('sel'); }
+        else { arr.push(val); opt.classList.add('sel'); }
+        if (arr.length) picks[key] = arr; else delete picks[key];
         setJSON(PICKS_KEY, picks);
       };
     });
     // WOD search
     weekEl.querySelectorAll('.wod-search').forEach(function(inp) {
       inp.oninput = function() { renderWodResults(inp.dataset.day, inp.value); };
+      renderWodResults(inp.dataset.day, '');   // populate filtered (e.g. bodyweight) days on open
     });
     weekEl.querySelectorAll('.wod-chosen-wrap').forEach(function(wrap) {
       wrap.onclick = function(e) {
@@ -333,12 +349,22 @@
     });
   }
 
+  function dayWodEquip(day) {
+    var T = TYPES[layout[day]]; var wm = (T.modules || []).filter(function(m){ return m.wod; })[0];
+    return wm && wm.equip ? wm.equip : null;
+  }
   function renderWodResults(day, q) {
     var box = weekEl.querySelector('.wod-results[data-day="' + day + '"]');
+    if (!box) return;
     q = (q || '').toLowerCase().trim();
-    if (!q) { box.innerHTML = ''; return; }
-    var matches = WODS.filter(function(w){ return w[0].toLowerCase().indexOf(q) !== -1 || w[1].toLowerCase().indexOf(q) !== -1; }).slice(0, 12);
-    if (!matches.length) { box.innerHTML = '<div class="wod-hint">No WODs match “' + q + '”.</div>'; return; }
+    var equip = dayWodEquip(day);   // e.g. Bodyweight day → only bodyweight-able WODs
+    if (!q && !equip) { box.innerHTML = ''; return; }   // WOD day waits for a search; filtered days browse by default
+    var matches = WODS.filter(function(w){
+      if (equip && !w[2].every(function(e){ return equip.indexOf(e) > -1; })) return false;
+      if (q && w[0].toLowerCase().indexOf(q) === -1 && w[1].toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    }).slice(0, equip ? 40 : 12);
+    if (!matches.length) { box.innerHTML = '<div class="wod-hint">No WODs match.</div>'; return; }
     box.innerHTML = matches.map(function(w) {
       return '<div class="wod-opt" data-day="' + day + '" data-wod="' + w[0].replace(/"/g,'&quot;') + '"><span class="wo-name">' + w[0] + '</span><span class="wo-fmt">' + w[1] + '</span><div class="wo-desc">' + w[3] + '</div></div>';
     }).join('');
@@ -376,7 +402,45 @@
     tplEl.value = '';
   };
 
+  // ---- Fast-override mode (#7): if a fast is running, swap the builder for fasted-approved work ----
+  var showNormalPlan = false;
+  function fastActive() {
+    try { var s = parseInt(localStorage.getItem('fast-start-time'), 10); if (!s) return false; var h = (Date.now() - s) / 3600000; return h >= 0 && h < 80; } catch (e) { return false; }
+  }
+  function fastCardHTML() {
+    return '<div class="fast-ov">' +
+      '<div class="fo-h">🟡 Fast in progress — fasted-training mode</div>' +
+      '<p class="fo-p">While you\'re fasting, training switches to recovery-friendly work. <b>No WOD, no heavy lifting, no hard metcon</b> — fasted, those spike cortisol and wreck the session (and your fast).</p>' +
+      '<div class="fo-lbl">Approved while fasting</div><ul class="fo-list">' +
+      '<li>30–45 min easy <b>walk</b> (Zone 1–2) — actually boosts fasted fat-burn</li>' +
+      '<li><b>Mobility / stretch / foam roll</b>, 10–15 min</li>' +
+      '<li>Light bodyweight <b>greasing-the-groove</b>: easy sets of push-ups, squats, hollow holds — never near failure</li>' +
+      '<li>Easy <b>Zone-2 bike or row</b> if you feel good — stop at the first sign of dizziness</li>' +
+      '</ul>' +
+      '<p class="fo-p">Electrolytes before &amp; during. Resume hard training the day <b>after</b> you break the fast.</p>' +
+      '<button class="fo-toggle" id="show-normal">View my normal week anyway →</button>' +
+      '</div>';
+  }
+  function applyFastMode() {
+    var ov = document.getElementById('fast-override');
+    var tpl = document.querySelector('.tpl-card'), rw = document.getElementById('reset-week');
+    var hide = fastActive() && !showNormalPlan;
+    if (tpl) tpl.style.display = hide ? 'none' : '';
+    weekEl.style.display = hide ? 'none' : '';
+    if (rw) rw.style.display = hide ? 'none' : '';
+    if (hide) {
+      ov.innerHTML = fastCardHTML();
+      document.getElementById('show-normal').onclick = function() { showNormalPlan = true; applyFastMode(); };
+    } else if (fastActive() && showNormalPlan) {
+      ov.innerHTML = '<div class="fast-ov mini">🟡 Fast running — viewing your normal plan. <button class="fo-toggle" id="back-fast">Back to fasted training</button></div>';
+      document.getElementById('back-fast').onclick = function() { showNormalPlan = false; applyFastMode(); };
+    } else {
+      ov.innerHTML = '';
+    }
+  }
+
   buildWeek();
+  applyFastMode();
 })();
 </script>
 </body>

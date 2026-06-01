@@ -48,6 +48,10 @@
   .w-name { font-size: 0.96rem; font-weight: 800; color: #fff; flex: 1; min-width: 120px; }
   .w-fmt { font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #8ce0a8; background: #14301e; padding: 3px 8px; border-radius: 10px; }
   .w-desc { font-size: 0.84rem; color: #cbd; margin-top: 6px; line-height: 1.45; }
+  .w-desc .wb-head { font-weight: 700; color: #dde; margin-bottom: 3px; }
+  .w-desc .wb-list { margin: 0; padding-left: 18px; }
+  .w-desc .wb-list li { margin: 2px 0; line-height: 1.4; }
+  .w-desc .wb-line { line-height: 1.45; }
   .w-eq { font-size: 0.66rem; color: #778; margin-top: 7px; }
   .w-eq span { background: #16161c; border: 1px solid #24242c; border-radius: 8px; padding: 2px 7px; margin-right: 4px; display: inline-block; margin-bottom: 3px; }
   .list-head { font-size: 0.7rem; color: #666; margin: 12px 0 8px; }
@@ -165,7 +169,7 @@
     var html = '';
     shown.forEach(function(w) {
       html += '<div class="wod"><div class="w-top"><span class="w-name">' + w[0] + '</span><span class="w-fmt">' + w[1] + '</span></div>' +
-        '<div class="w-desc">' + w[3] + '</div>' +
+        '<div class="w-desc">' + (window.wodBullets ? window.wodBullets(w[3]) : w[3]) + '</div>' +
         '<div class="w-eq">' + w[2].map(function(e){ return '<span>' + e + '</span>'; }).join('') + '</div></div>';
     });
     listEl.innerHTML = html;

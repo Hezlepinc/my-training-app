@@ -36,6 +36,17 @@
   .picks { padding: 0 15px 13px 37px; }
   .pick-line { font-size: 0.82rem; color: #cfd6dd; padding: 3px 0; line-height: 1.4; }
   .pick-line.empty { color: #5a5a66; font-style: italic; }
+  .pick-line.wod-pick b { color: #eafff0; }
+  .pl-fmt { font-size: 0.56rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #8ce0a8; background: #14301e; padding: 2px 6px; border-radius: 8px; }
+  .pl-wod { margin-top: 3px; color: #aab4bd; font-size: 0.78rem; }
+  .pl-wod .wb-head { font-weight: 700; color: #ccd; margin-bottom: 2px; }
+  .pl-wod .wb-list { margin: 0; padding-left: 16px; }
+  .pl-wod .wb-list li { margin: 1px 0; line-height: 1.35; }
+  .fast-ov { background: #1f1a0e; border: 1px solid #6a5a2a; border-radius: 12px; padding: 15px 17px; }
+  .fo-h { font-size: 0.96rem; font-weight: 800; color: #f0d890; margin-bottom: 6px; }
+  .fo-p { font-size: 0.82rem; color: #cbbf9f; line-height: 1.55; margin: 6px 0; }
+  .fo-p b { color: #f0d890; }
+  .fo-toggle { margin-top: 10px; background: #2a2418; border: 1px solid #5a4a28; color: #e0c878; border-radius: 8px; padding: 8px 13px; font-size: 0.76rem; font-weight: 700; cursor: pointer; font-family: inherit; }
   footer { margin-top: 26px; padding-top: 14px; border-top: 1px solid #1e1e26; font-size: 0.68rem; color: #555; text-align: center; line-height: 1.6; }
   footer a { color: #6ad08a; text-decoration: none; }
 </style>
@@ -60,11 +71,20 @@
 
 <footer>Open the <a href="workout.html">Train builder</a> to set day types &amp; pick workouts</footer>
 
+<script src="wods-data.js"></script>
 <script>
 (function() {
   var DONE = 'workout-week-done';
   var LAYOUT = 'week-layout';
   var PICKS = 'workout-picks-v2';
+  var WMAP = {}; (window.WODS || []).forEach(function(w){ WMAP[w[0].toLowerCase()] = w; });
+  var schedShowNormal = false;
+  function fastActive(){ try { var s = parseInt(localStorage.getItem('fast-start-time'),10); if(!s) return false; var h=(Date.now()-s)/3600000; return h>=0 && h<80; } catch(e){ return false; } }
+  function fastCardHTML(){
+    return '<div class="fast-ov"><div class="fo-h">🟡 Fast in progress — fasted-training mode</div>' +
+      '<p class="fo-p">Your normal week is paused while you fast. <b>No WOD, heavy lifting, or hard metcon.</b> Approved: easy walk (Zone 1–2), mobility/stretch, light bodyweight greasing-the-groove, or easy Zone-2 bike/row. Electrolytes before &amp; during; resume hard training the day after you break.</p>' +
+      '<button class="fo-toggle" id="sched-shownormal">View my normal week anyway →</button></div>';
+  }
 
   var DAYS = [['mon','Monday'],['tue','Tuesday'],['wed','Wednesday'],['thu','Thursday'],['fri','Friday'],['sat','Saturday'],['sun','Sunday']];
   var DEFAULT_LAYOUT = { mon:'bodyweight', tue:'lower', wed:'run', thu:'upper', fri:'wod', sat:'longrun', sun:'rest' };
@@ -82,6 +102,18 @@
     var layout = Object.assign({}, DEFAULT_LAYOUT, getJSON(LAYOUT, {}));
     var picks = getJSON(PICKS, {});
     var weekEl = document.getElementById('week');
+    var summaryBar = document.querySelector('.summary-bar');
+
+    // Fast-override: if a fast is running, replace the week with fasted-approved guidance
+    if (fastActive() && !schedShowNormal) {
+      if (summaryBar) summaryBar.style.display = 'none';
+      weekEl.innerHTML = fastCardHTML();
+      var sn = document.getElementById('sched-shownormal');
+      if (sn) sn.onclick = function(){ schedShowNormal = true; render(); };
+      return;
+    }
+    if (summaryBar) summaryBar.style.display = '';
+
     var html = '', doneN = 0;
 
     DAYS.forEach(function(d) {
@@ -95,9 +127,22 @@
         '<div class="day-type">' + title + '</div></div>' +
         '<div class="check" data-check="' + day + '"></div></div>';
       html += '<div class="picks">';
-      var dayPicks = Object.keys(picks).filter(function(k){ return k.indexOf(day + ':') === 0; }).map(function(k){ return picks[k]; });
+      var dayPicks = [];
+      Object.keys(picks).filter(function(k){ return k.indexOf(day + ':') === 0; }).forEach(function(k){
+        var v = picks[k];
+        if (Array.isArray(v)) dayPicks = dayPicks.concat(v);
+        else if (v) dayPicks.push(v);
+      });
       if (dayPicks.length) {
-        dayPicks.forEach(function(v){ html += '<div class="pick-line">• ' + v + '</div>'; });
+        dayPicks.forEach(function(v){
+          var w = WMAP[('' + v).toLowerCase()];
+          if (w) {   // it's a WOD — list its movements, not just the name
+            html += '<div class="pick-line wod-pick"><b>• ' + v + '</b> <span class="pl-fmt">' + w[1] + '</span>' +
+              (window.wodBullets ? '<div class="pl-wod">' + window.wodBullets(w[3]) + '</div>' : '') + '</div>';
+          } else {
+            html += '<div class="pick-line">• ' + v + '</div>';
+          }
+        });
       } else if (NOTE[type]) {
         html += '<div class="pick-line">' + NOTE[type] + '</div>';
       } else {
