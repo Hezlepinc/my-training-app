@@ -4,12 +4,12 @@
 <meta name="robots" content="noindex,nofollow">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Keto</title>
+<title>MyTrainingApp</title>
 <meta name="theme-color" content="#0d0d0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Keto">
+<meta name="apple-mobile-web-app-title" content="MyTrainingApp">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -61,8 +61,7 @@
   <svg class="app-logo" viewBox="0 0 24 24" fill="#2a9a5a" aria-hidden="true">
     <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C3 11 4 9 17 8z"/>
   </svg>
-  <span class="app-title">Keto</span>
-  <span class="app-section" id="section-name">Cookbook</span>
+  <span class="app-title">MyTrainingApp</span>
 </div>
 
 <div class="loader" id="loader">Loading…</div>
@@ -106,7 +105,7 @@
 
   function activate(tab, save) {
     tabs.forEach(function(t){ t.classList.toggle('active', t === tab); });
-    sectionName.textContent = tab.dataset.name;
+    if (sectionName) sectionName.textContent = tab.dataset.name;
     loader.classList.remove('hide');
     frame.src = tab.dataset.src;
     if (save !== false) { try { localStorage.setItem(TAB_KEY, tab.dataset.tab); } catch(e){} }

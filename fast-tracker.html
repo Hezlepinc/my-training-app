@@ -113,6 +113,29 @@
 
   .disclaimer { font-size: 0.68rem; color: #666; background: #14140a; border: 1px solid #2a2a1a; border-radius: 8px; padding: 12px; margin-top: 16px; line-height: 1.5; }
 
+  /* Fasting phases (achievements) */
+  .phase-summary { font-size: 0.82rem; color: #bbb; background: #131318; border: 1px solid #1e1e26; border-radius: 9px; padding: 11px 14px; margin-bottom: 10px; line-height: 1.6; }
+  .phase-summary b { color: #fff; }
+  .phase-card { background: #131318; border: 1px solid #1e1e26; border-radius: 10px; margin-bottom: 7px; overflow: hidden; }
+  .phase-card.earned { border-color: #2a5a3a; }
+  .phase-card.current { border-color: #4a6aaa; box-shadow: 0 0 14px rgba(74,106,170,0.18); }
+  .phase-card.upcoming { opacity: 0.55; }
+  .ph-head { display: flex; align-items: center; gap: 11px; padding: 12px 14px; cursor: pointer; user-select: none; }
+  .ph-range { font-size: 0.72rem; font-weight: 800; color: #6aaae0; width: 56px; flex-shrink: 0; }
+  .phase-card.earned .ph-range { color: #5ad080; }
+  .ph-name { flex: 1; font-size: 0.9rem; font-weight: 700; color: #eee; }
+  .ph-state { font-size: 1rem; flex-shrink: 0; }
+  .ph-chev { color: #555; font-size: 0.8rem; transition: transform 0.2s; flex-shrink: 0; }
+  .phase-card.open .ph-chev { transform: rotate(90deg); }
+  .ph-body { display: none; padding: 0 14px 14px 14px; }
+  .phase-card.open .ph-body { display: block; }
+  .ph-clock { font-size: 0.7rem; color: #777; font-weight: 600; margin-bottom: 8px; }
+  .ph-happening { font-size: 0.82rem; color: #bcc; line-height: 1.5; }
+  .ph-blabel { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #5a8aaa; margin: 10px 0 4px; }
+  .ph-benefits { list-style: none; }
+  .ph-benefits li { font-size: 0.82rem; color: #cbd; padding: 3px 0 3px 18px; position: relative; line-height: 1.4; }
+  .ph-benefits li::before { content: '✓'; position: absolute; left: 0; color: #5ad080; font-weight: 800; }
+
   .ms-banner { display: none; align-items: flex-start; gap: 12px; background: linear-gradient(135deg,#143a26,#0f2a1c); border: 1px solid #2a6a45; border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; }
   .ms-banner.show { display: flex; }
   .ms-banner .mb-icon { font-size: 1.3rem; flex-shrink: 0; }
@@ -173,7 +196,8 @@
   </div>
 </div>
 
-<h2>Milestones</h2>
+<h2>Fasting Phases <span style="font-weight:600;text-transform:none;letter-spacing:0;color:#777;">— what you've earned &amp; what's next</span></h2>
+<div class="phase-summary" id="phase-summary">Set a start time to track your phases.</div>
 <div id="milestones"></div>
 
 <h2>Hour-by-Hour Protocol <span style="font-weight:600;text-transform:none;letter-spacing:0;color:#777;">— what to do &amp; when</span></h2>
@@ -213,6 +237,12 @@
   <div class="stop-ok"><strong>Normal — push through:</strong> hunger waves (pass in minutes), mild headache (electrolytes fix it), boredom, mildly cold hands. No ego — break early if a red signal hits. Breaking the fast is never failure.</div>
 </div>
 
+<h2>⚕️ Medical Caution</h2>
+<div class="disclaimer" style="border-color:#4a3a1a;">
+  <strong style="color:#ccaa55;">Skip extended fasting (or only do it under medical supervision) if you are:</strong> diabetic on medication · have a history of eating disorders · have gout · pregnant · underweight.<br><br>
+  <strong style="color:#ccaa55;">Hydration:</strong> thirst can be blunted on a long fast — drink on a schedule, not just when thirsty. Electrolytes (sodium, potassium, magnesium) are non-negotiable (see above).
+</div>
+
 <h2>Breaking the Fast (matters as much as the fast)</h2>
 <div class="break-step"><div class="break-num">1</div><div class="break-body">1 cup bone broth first.<div class="break-wait">WAIT 20–30 MIN</div></div></div>
 <div class="break-step"><div class="break-num">2</div><div class="break-body">Something small &amp; gentle — 2–3 boiled eggs, a few oz salmon, or ½ avocado.<div class="break-wait">WAIT 1 HOUR</div></div></div>
@@ -235,13 +265,20 @@
   var KEY_ELEC = 'fast-elec-state';
   var KEY_ACK = 'fast-last-milestone';
 
-  var MILESTONES = [
-    { h: 0,  label: 'Fast begins', detail: 'Last bite of food. Start water + electrolytes.' },
-    { h: 12, label: 'Glycogen depleting', detail: 'Ketones rising. Hunger may peak here — it passes.' },
-    { h: 24, label: 'Decision Point #1', detail: 'Deep ketosis, HGH climbing. Stop here for a solid 24h, or continue.', decision: true },
-    { h: 36, label: 'Peak clarity zone', detail: 'Most people feel sharpest here. Keep electrolytes up — cramps can hit.' },
-    { h: 48, label: 'Decision Point #2', detail: 'Stop here, or commit to 72 only if genuinely strong. No ego.', decision: true },
-    { h: 72, label: 'Break the fast', detail: 'Max autophagy / HGH benefit. Follow the break protocol below.' }
+  // Achievement phases. lo/h = start/end hour. name + what's happening + benefits.
+  var PHASES = [
+    { lo:0,  h:12, name:'Post-Absorptive Phase', happening:'Blood glucose still supported by liver glycogen. Insulin falling, glucagon rising. Mild hunger waves.',
+      benefits:['Insulin starts dropping','Digestive rest','Insulin signaling begins improving'] },
+    { lo:12, h:24, name:'Glycogen Depletion', happening:'Liver glycogen largely depleted (sooner if keto-adapted). Fat oxidation rises; growth hormone climbing.',
+      benefits:['Fat becomes the primary fuel','Growth hormone ↑ (muscle-sparing)','Inflammation markers begin to fall','Mental clarity often improves late'] },
+    { lo:24, h:36, name:'Ketosis Deepens', happening:'Ketones become the dominant brain fuel. Insulin very low, glucagon high, noradrenaline up (alertness).', decision:true,
+      benefits:['Appetite suppression (ghrelin drops)','Stable energy','Cognitive clarity / focus','Early autophagy activation'] },
+    { lo:36, h:48, name:'Autophagy Acceleration', happening:'Cellular cleanup ramps up — damaged proteins & organelles recycled. Immune modulation begins.',
+      benefits:['Autophagy significantly elevated','Reduced systemic inflammation','Improved insulin sensitivity','Immune “reset” signals begin'] },
+    { lo:48, h:60, name:'Immune & Metabolic Reset', happening:'Fat oxidation very high. Stem-cell signaling and white-blood-cell turnover increase (animal + limited human data).', decision:true,
+      benefits:['Immune cell regeneration signals','Deep metabolic flexibility','Inflammatory cytokines drop further','Calm, steady mood reported by many'] },
+    { lo:60, h:72, name:'Deep Fasting State', happening:'Maximum ketosis for most people. Autophagy near peak; very low insulin, high fat utilization.',
+      benefits:['Deep cellular cleanup','Strong insulin-sensitivity reset','Longevity signaling (AMPK, sirtuins)','True hunger vs habit hunger becomes clear'] }
   ];
 
   var startInput = document.getElementById('start-input');
@@ -263,15 +300,15 @@
 
   function checkMilestone(elapsedH) {
     var banner = document.getElementById('ms-banner');
-    var passedIdx = 0;
-    MILESTONES.forEach(function(m, i){ if (elapsedH >= m.h) passedIdx = i; });
+    var idx = 0;
+    PHASES.forEach(function(p, i){ if (elapsedH >= p.lo) idx = i; });
     var ack = parseInt(localStorage.getItem(KEY_ACK) || '0', 10);
-    if (passedIdx > ack) {
-      var m = MILESTONES[passedIdx];
-      document.getElementById('mb-icon').textContent = m.decision ? '⚖️' : '🎯';
-      document.getElementById('mb-title').textContent = m.h + ' hours reached — ' + m.label;
-      document.getElementById('mb-detail').textContent = m.detail;
-      banner.dataset.idx = passedIdx;
+    if (idx > ack) {
+      var p = PHASES[idx];
+      document.getElementById('mb-icon').textContent = p.decision ? '⚖️' : '🏆';
+      document.getElementById('mb-title').textContent = p.lo + 'h reached — ' + p.name;
+      document.getElementById('mb-detail').textContent = p.happening;
+      banner.dataset.idx = idx;
       banner.classList.add('show');
     }
   }
@@ -288,10 +325,10 @@
       if (h === 0) {
         icon = '🍽️'; text = 'Last bite done · 12 oz salt water · magnesium tonight before bed';
       } else if (h % 12 === 0) {
-        var ms = MILESTONES.filter(function(m){ return m.h === h; })[0];
+        var ms = PHASES.filter(function(p){ return p.h === h; })[0];
         icon = '🍲'; mile = !!ms;
         text = 'Bone broth (1 cup) + electrolytes' + (h % 24 === 0 ? ' + magnesium' : '');
-        if (ms) text += ' — <b>' + ms.label + '</b>';
+        if (ms) text += ' — <b>' + ms.name + ' done</b>';
       } else {
         var r = h % 12;
         if (r === 2 || r === 8) { icon = '🧂'; text = 'Water + pinch of salt'; }
@@ -336,21 +373,61 @@
     return 'Started ' + days[d.getDay()] + ' ' + h12 + ':' + pad(d.getMinutes()) + ' ' + ampm;
   }
 
-  function buildMilestones() {
+  function buildPhases() {
     msContainer.innerHTML = '';
-    MILESTONES.forEach(function(m, i) {
+    PHASES.forEach(function(p, i) {
       var div = document.createElement('div');
-      div.className = 'milestone' + (m.decision ? ' decision' : '');
+      div.className = 'phase-card' + (p.decision ? ' decision' : '');
       div.dataset.idx = i;
-      var badge = m.decision ? '<span class="decision-badge">decide</span>' : '';
+      var benefits = p.benefits.map(function(b){ return '<li>' + b + '</li>'; }).join('');
+      var badge = p.decision ? '<span class="decision-badge">decision point</span>' : '';
       div.innerHTML =
-        '<div class="ms-mark">' + m.h + 'h</div>' +
-        '<div class="ms-body"><div class="ms-time" data-clock="'+i+'"></div>' +
-        '<div class="ms-label">' + m.label + badge + '</div>' +
-        '<div class="ms-detail">' + m.detail + '</div></div>' +
-        '<div class="ms-check" data-check="'+i+'"></div>';
+        '<div class="ph-head">' +
+          '<div class="ph-range">' + p.lo + '–' + p.h + 'h</div>' +
+          '<div class="ph-name">' + p.name + badge + '</div>' +
+          '<div class="ph-state" data-state="'+i+'">🔒</div>' +
+          '<div class="ph-chev">▸</div>' +
+        '</div>' +
+        '<div class="ph-body">' +
+          '<div class="ph-clock" data-clock="'+i+'"></div>' +
+          '<div class="ph-happening">' + p.happening + '</div>' +
+          '<div class="ph-blabel">Benefits</div><ul class="ph-benefits">' + benefits + '</ul>' +
+        '</div>';
+      div.querySelector('.ph-head').addEventListener('click', function(){ div.classList.toggle('open'); });
       msContainer.appendChild(div);
     });
+  }
+
+  function renderPhases(elapsedH, start) {
+    var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    function clk(ms){ var d=new Date(ms); var h=d.getHours(); var ap=h>=12?'PM':'AM'; var h12=h%12||12; return days[d.getDay()]+' '+h12+':'+pad(d.getMinutes())+' '+ap; }
+    var earned = 0, currentName = null, nextName = null, nextAt = null;
+    PHASES.forEach(function(p, i) {
+      var card = msContainer.querySelector('.phase-card[data-idx="'+i+'"]');
+      var stateEl = document.querySelector('.ph-state[data-state="'+i+'"]');
+      var clockEl = document.querySelector('[data-clock="'+i+'"]');
+      if (!card) return;
+      card.classList.remove('earned','current','upcoming');
+      if (elapsedH >= p.h) {
+        card.classList.add('earned'); if (stateEl) stateEl.textContent = '✓'; earned++;
+        if (clockEl) clockEl.textContent = 'Earned · completed ' + clk(start + p.h*3600000);
+      } else if (elapsedH >= p.lo) {
+        card.classList.add('current', 'open'); if (stateEl) stateEl.textContent = '▶'; currentName = p.name;
+        if (clockEl) clockEl.textContent = 'In progress · completes ' + clk(start + p.h*3600000);
+      } else {
+        card.classList.add('upcoming'); if (stateEl) stateEl.textContent = '🔒';
+        if (clockEl) clockEl.textContent = 'Starts ' + clk(start + p.lo*3600000);
+        if (!nextName) { nextName = p.name; nextAt = start + p.lo*3600000; }
+      }
+    });
+    var sum = document.getElementById('phase-summary');
+    if (sum) {
+      var s = '<b>' + earned + ' / 6</b> phases earned';
+      if (currentName) s += ' &nbsp;·&nbsp; you\'re in <b style="color:#7ad89a">' + currentName + '</b>';
+      if (nextName) s += ' &nbsp;·&nbsp; next: <b>' + nextName + '</b> at ' + clk(nextAt);
+      else if (!nextName && currentName) s += ' &nbsp;·&nbsp; <b>final phase — full reset</b>';
+      sum.innerHTML = s;
+    }
   }
 
   function render() {
@@ -363,9 +440,10 @@
       phaseEl.textContent = 'Set start time below';
       phaseEl.className = 'timer-phase phase-notstarted';
       sinceEl.textContent = '';
-      document.querySelectorAll('.milestone').forEach(function(el){ el.classList.remove('passed','current'); });
+      document.querySelectorAll('.phase-card').forEach(function(el){ el.classList.remove('earned','current','upcoming','open'); });
+      document.querySelectorAll('.ph-state').forEach(function(el){ el.textContent='🔒'; });
       document.querySelectorAll('[data-clock]').forEach(function(el){ el.textContent=''; });
-      document.querySelectorAll('[data-check]').forEach(function(el){ el.textContent=''; });
+      var sum0 = document.getElementById('phase-summary'); if (sum0) sum0.innerHTML = 'Set a start time to track your phases.';
       buildSchedule(null);
       return;
     }
@@ -395,34 +473,10 @@
     }
     sinceEl.textContent = fmtSince(start);
     buildSchedule(start, now);
-
-    // milestone clocks + states
-    var currentSet = false;
-    MILESTONES.forEach(function(m, i) {
-      var msTime = start + m.h * 3600000;
-      var d = new Date(msTime);
-      var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-      var h = d.getHours(); var ampm = h >= 12 ? 'PM' : 'AM'; var h12 = h % 12 || 12;
-      var clockEl = document.querySelector('[data-clock="'+i+'"]');
-      if (clockEl) clockEl.textContent = days[d.getDay()] + ' ' + h12 + ':' + pad(d.getMinutes()) + ' ' + ampm;
-
-      var msEl = msContainer.querySelector('.milestone[data-idx="'+i+'"]');
-      var checkEl = document.querySelector('[data-check="'+i+'"]');
-      msEl.classList.remove('passed','current');
-      var nextH = (i < MILESTONES.length - 1) ? MILESTONES[i+1].h : Infinity;
-      if (elapsedH >= m.h && elapsedH < nextH) {
-        msEl.classList.add('current');
-        if (checkEl) checkEl.textContent = '▶';
-      } else if (elapsedH >= m.h) {
-        msEl.classList.add('passed');
-        if (checkEl) checkEl.textContent = '✓';
-      } else {
-        if (checkEl) checkEl.textContent = '';
-      }
-    });
+    renderPhases(elapsedH, start);
   }
 
-  buildMilestones();
+  buildPhases();
 
   // If no fast is set, just default the start picker to 7:00 PM local.
   // Nothing auto-starts — each person taps "Set Start" when they're ready,

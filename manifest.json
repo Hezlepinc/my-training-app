@@ -1,6 +1,6 @@
 {
-  "name": "Keto",
-  "short_name": "Keto",
+  "name": "MyTrainingApp",
+  "short_name": "MyTrainingApp",
   "description": "Keto cookbook, shopping lists, fast tracker, and training program.",
   "start_url": "app.html",
   "scope": "./",
