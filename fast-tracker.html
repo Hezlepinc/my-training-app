@@ -28,6 +28,9 @@
   .timer-since { font-size: 0.72rem; color: #555; margin-top: 12px; }
   .timer-count { font-size: 2.8rem; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -0.01em; }
   .timer-count .cd-label { display: block; font-size: 0.66rem; color: #6aaae0; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 10px; }
+  .next-phase { font-size: 0.78rem; color: #b0a880; font-weight: 600; margin-top: 12px; line-height: 1.4; }
+  .next-phase .nx-time { color: #e8c888; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .next-phase .nx-name { color: #ccc; }
   .cd-bar { height: 6px; background: #1a1a22; border-radius: 3px; overflow: hidden; margin-top: 10px; }
   .cd-bar .fill { height: 100%; background: linear-gradient(to right,#2a6aaa,#6aaae0); width: 0%; transition: width 0.9s linear; }
 
@@ -186,6 +189,7 @@
 <div class="timer-card">
   <div class="timer-count" id="countdown">--:--:--</div>
   <div class="cd-bar"><div class="fill" id="cd-fill"></div></div>
+  <div class="next-phase" id="next-phase"></div>
   <div class="timer-phase phase-notstarted" id="phase">Set start time below</div>
   <div class="timer-since" id="since"></div>
 </div>
@@ -533,16 +537,45 @@
   function fmtHMS(ms){ var s = Math.floor(ms/1000); return pad(Math.floor(s/3600)) + ':' + pad(Math.floor((s%3600)/60)) + ':' + pad(s%60); }
   function tickCountdown(){
     var cd = document.getElementById('countdown'), fill = document.getElementById('cd-fill');
+    var nx = document.getElementById('next-phase');
     var start = getStart();
     if (!cd) return;
-    if (!start) { cd.innerHTML = '--:--:-- <span class="cd-label">not started</span>'; if (fill) fill.style.width = '0%'; return; }
+    if (!start) {
+      cd.innerHTML = '--:--:-- <span class="cd-label">not started</span>';
+      if (fill) fill.style.width = '0%';
+      if (nx) nx.innerHTML = '';
+      return;
+    }
     var now = Date.now();
-    if (now < start) { cd.innerHTML = '<span class="cd-label">starts soon</span>'; if (fill) fill.style.width = '0%'; return; }
+    if (now < start) {
+      cd.innerHTML = '<span class="cd-label">starts soon</span>';
+      if (fill) fill.style.width = '0%';
+      if (nx) nx.innerHTML = '';
+      return;
+    }
     var goalMs = start + GOAL_H * 3600000;
     var remain = goalMs - now;
-    if (remain <= 0) { cd.innerHTML = '🎉 <span class="cd-label">72-hour goal reached</span>'; if (fill) fill.style.width = '100%'; return; }
+    if (remain <= 0) {
+      cd.innerHTML = '🎉 <span class="cd-label">72-hour goal reached</span>';
+      if (fill) fill.style.width = '100%';
+      if (nx) nx.innerHTML = '<span class="nx-name">All phases unlocked.</span>';
+      return;
+    }
     cd.innerHTML = '⏳ ' + fmtHMS(remain) + ' <span class="cd-label">left to 72 h</span>';
     if (fill) fill.style.width = ((now - start) / (GOAL_H * 3600000) * 100).toFixed(1) + '%';
+
+    // Time-to-next-phase unlock (uses upper bound `h` of the phase the user is currently in).
+    if (nx) {
+      var elapsedH = (now - start) / 3600000;
+      var nextP = null;
+      for (var i = 0; i < PHASES.length; i++) { if (elapsedH < PHASES[i].h) { nextP = PHASES[i]; break; } }
+      if (nextP) {
+        var nextMs = start + nextP.h * 3600000 - now;
+        nx.innerHTML = '🔓 <span class="nx-time">' + fmtHMS(nextMs) + '</span> to unlock <span class="nx-name">' + nextP.name + '</span>';
+      } else {
+        nx.innerHTML = '';
+      }
+    }
   }
 
   render();

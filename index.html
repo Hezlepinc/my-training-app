@@ -26,6 +26,9 @@
   .day { background: #131318; border: 1px solid #1e1e26; border-radius: 12px; margin-bottom: 9px; overflow: hidden; }
   .day-head { display: flex; align-items: baseline; gap: 9px; padding: 12px 15px 8px; }
   .day-name { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #88a; }
+  .day-date { font-size: 0.66rem; color: #667; font-weight: 600; margin-left: 6px; letter-spacing: 0; text-transform: none; }
+  .day-today { background: #2a4a7a; color: #cdf; font-size: 0.58rem; font-weight: 800; padding: 1px 6px; border-radius: 7px; margin-left: 6px; letter-spacing: 0.06em; }
+  .day.is-today { border-color: #3a5a8a; }
   .day-macros { margin-left: auto; font-size: 0.72rem; color: #9aa; font-weight: 600; }
   .day-macros .cal { color: #e8c888; font-weight: 800; }
   .meals { padding: 0 15px; }
@@ -140,6 +143,24 @@
   var R = window.RECIPES || {}, M = window.RECIPE_META || {}, COST = window.RECIPE_COST || {}, NOPLAN = window.NOPLAN || {};
   var WEEK_KEY = 'meal-week-v2', DIET_KEY = 'cook-diet';
   var DAYS = [['mon','Monday'],['tue','Tuesday'],['wed','Wednesday'],['thu','Thursday'],['fri','Friday'],['sat','Saturday'],['sun','Sunday']];
+
+  // Anchor day labels to THIS WEEK's actual calendar dates (Mon..Sun containing today).
+  // Lets the user see "Wed Jun 3" instead of just "Wednesday", so starting mid-week is clear.
+  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function weekDates() {
+    var t = new Date(); t.setHours(0,0,0,0);
+    var dow = t.getDay();                    // 0=Sun..6=Sat
+    var mondayOffset = dow === 0 ? -6 : 1 - dow;
+    var mon = new Date(t); mon.setDate(t.getDate() + mondayOffset);
+    var out = {}; var todayKey = null;
+    ['mon','tue','wed','thu','fri','sat','sun'].forEach(function(k, i) {
+      var d = new Date(mon); d.setDate(mon.getDate() + i);
+      out[k] = { date: d, label: MONTHS[d.getMonth()] + ' ' + d.getDate() };
+      if (d.getTime() === t.getTime()) todayKey = k;
+    });
+    out._todayKey = todayKey;
+    return out;
+  }
   var DIETS = [['all','All'],['keto','Keto'],['paleo','Paleo'],['standard','Standard'],['plant','Plant']];
 
   function getJSON(k,d){ try { return JSON.parse(localStorage.getItem(k)) || d; } catch(e){ return d; } }
@@ -188,9 +209,13 @@
 
   function renderWeek(){
     var html = '';
+    var wd = weekDates();
     DAYS.forEach(function(d){
       var key = d[0], t = dayTotals(key);
-      html += '<div class="day"><div class="day-head"><span class="day-name">' + d[1] + '</span>';
+      var isToday = wd._todayKey === key;
+      html += '<div class="day' + (isToday ? ' is-today' : '') + '"><div class="day-head"><span class="day-name">' + d[1] + '</span>' +
+        '<span class="day-date">' + wd[key].label + '</span>' +
+        (isToday ? '<span class="day-today">today</span>' : '');
       if (t.n) html += '<span class="day-macros"><span class="cal">' + t.cal + ' cal</span> · ' + t.p + 'P ' + t.c + 'C ' + t.f + 'F</span>';
       html += '</div><div class="meals">';
       var meals = week[key] || [];
@@ -236,7 +261,9 @@
 
   function openPicker(dayKey){
     pickerDay = dayKey;
-    ovDayEl.textContent = (DAYS.filter(function(d){ return d[0]===dayKey; })[0]||['','Day'])[1];
+    var wd = weekDates();
+    var name = (DAYS.filter(function(d){ return d[0]===dayKey; })[0]||['','Day'])[1];
+    ovDayEl.textContent = name + ' · ' + (wd[dayKey] ? wd[dayKey].label : '');
     ovSearch.value = '';
     overlay.classList.add('show');
     renderPicker();
