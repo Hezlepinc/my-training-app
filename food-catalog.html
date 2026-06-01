@@ -158,6 +158,8 @@
 
   var listEl = document.getElementById('list');
   var qEl = document.getElementById('q');
+  var sub = document.querySelector('.subtitle');
+  if (sub) sub.textContent = FOODS.length + ' foods · all diets · per serving (cal / fat / pro / net carb) · search';
 
   function render(filter) {
     filter = (filter || '').toLowerCase().trim();
