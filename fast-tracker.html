@@ -26,8 +26,8 @@
   .timer-unit { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.15em; margin-top: 8px; }
   .timer-phase { font-size: 1rem; font-weight: 700; margin-top: 16px; padding: 6px 16px; border-radius: 20px; display: inline-block; }
   .timer-since { font-size: 0.72rem; color: #555; margin-top: 12px; }
-  .timer-count { font-size: 1.5rem; font-weight: 800; color: #6aaae0; font-variant-numeric: tabular-nums; margin-top: 14px; letter-spacing: 0.01em; }
-  .timer-count .cd-label { font-size: 0.66rem; color: #667; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  .timer-count { font-size: 2.8rem; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -0.01em; }
+  .timer-count .cd-label { display: block; font-size: 0.66rem; color: #6aaae0; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 10px; }
   .cd-bar { height: 6px; background: #1a1a22; border-radius: 3px; overflow: hidden; margin-top: 10px; }
   .cd-bar .fill { height: 100%; background: linear-gradient(to right,#2a6aaa,#6aaae0); width: 0%; transition: width 0.9s linear; }
 
@@ -184,11 +184,9 @@
 </header>
 
 <div class="timer-card">
-  <div class="timer-elapsed" id="elapsed">--:--</div>
-  <div class="timer-unit" id="elapsed-unit">not started</div>
-  <div class="timer-phase phase-notstarted" id="phase">Set start time below</div>
-  <div class="timer-count" id="countdown"></div>
+  <div class="timer-count" id="countdown">--:--:--</div>
   <div class="cd-bar"><div class="fill" id="cd-fill"></div></div>
+  <div class="timer-phase phase-notstarted" id="phase">Set start time below</div>
   <div class="timer-since" id="since"></div>
 </div>
 
@@ -288,8 +286,6 @@
   ];
 
   var startInput = document.getElementById('start-input');
-  var elapsedEl = document.getElementById('elapsed');
-  var unitEl = document.getElementById('elapsed-unit');
   var phaseEl = document.getElementById('phase');
   var sinceEl = document.getElementById('since');
   var msContainer = document.getElementById('milestones');
@@ -441,8 +437,6 @@
     if (start) startInput.value = toLocalInputValue(start);
 
     if (!start) {
-      elapsedEl.textContent = '--:--';
-      unitEl.textContent = 'not started';
       phaseEl.textContent = 'Set start time below';
       phaseEl.className = 'timer-phase phase-notstarted';
       sinceEl.textContent = '';
@@ -457,17 +451,11 @@
     var now = Date.now();
     var elapsedMs = now - start;
     var elapsedH = elapsedMs / 3600000;
-    var hh = Math.floor(elapsedMs / 3600000);
-    var mm = Math.floor((elapsedMs % 3600000) / 60000);
 
     if (elapsedMs < 0) {
-      elapsedEl.textContent = 'soon';
-      unitEl.textContent = 'starts in ' + Math.abs(Math.round(elapsedH*10)/10) + 'h';
       phaseEl.textContent = 'Scheduled';
       phaseEl.className = 'timer-phase phase-notstarted';
     } else {
-      elapsedEl.textContent = pad(hh) + ':' + pad(mm);
-      unitEl.textContent = 'hours : minutes fasted';
       var phase, cls;
       if (elapsedH < 12) { phase = 'Early Fast'; cls = 'phase-fasting'; }
       else if (elapsedH < 24) { phase = 'Building Ketosis'; cls = 'phase-fasting'; }
@@ -547,7 +535,7 @@
     var cd = document.getElementById('countdown'), fill = document.getElementById('cd-fill');
     var start = getStart();
     if (!cd) return;
-    if (!start) { cd.textContent = ''; if (fill) fill.style.width = '0%'; return; }
+    if (!start) { cd.innerHTML = '--:--:-- <span class="cd-label">not started</span>'; if (fill) fill.style.width = '0%'; return; }
     var now = Date.now();
     if (now < start) { cd.innerHTML = '<span class="cd-label">starts soon</span>'; if (fill) fill.style.width = '0%'; return; }
     var goalMs = start + GOAL_H * 3600000;
