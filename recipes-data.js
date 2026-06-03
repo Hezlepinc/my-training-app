@@ -338,7 +338,100 @@ window.RECIPES = {
   "staple-green-beans":    { name: "Green beans (1 cup)",      ingredients: [{ item: "Green beans", qty: 1, unit: "cup", store: "publix" }] },
   "staple-butter":         { name: "Butter (1 lb)",            ingredients: [{ item: "Butter (grass-fed)", qty: 1, unit: "lb", store: "costco" }] },
   "staple-cheese":         { name: "Block cheese (8 oz)",      ingredients: [{ item: "Cheddar (block)", qty: 8, unit: "oz", store: "costco" }] },
-  "staple-avocado-oil":    { name: "Avocado oil (1 bottle)",   ingredients: [{ item: "Avocado oil", qty: 1, unit: "bottle", store: "costco" }] }
+  "staple-avocado-oil":    { name: "Avocado oil (1 bottle)",   ingredients: [{ item: "Avocado oil", qty: 1, unit: "bottle", store: "costco" }] },
+
+  /* ---- added 2026-06-03: web-sourced, balanced batch (snacks + breakfast focus) ---- */
+  "keto-cottage-egg-bites": { name: "Cottage Cheese Egg Bites", ingredients: [
+    { item: "Eggs", qty: 6, unit: "", store: "costco" },
+    { item: "Cottage cheese", qty: 1, unit: "cup", store: "costco" },
+    { item: "Cheddar (block)", qty: 0.5, unit: "cup", store: "costco" },
+    { item: "Bacon (sugar-free)", qty: 4, unit: "slices", store: "costco" },
+    { item: "Chives", qty: 1, unit: "small pack", store: "publix" },
+    { item: "Salt & pepper", qty: null, unit: "", store: "publix", staple: true }
+  ]},
+  "keto-bacon-stuffed-mushrooms": { name: "Bacon Cream Cheese Stuffed Mushrooms", ingredients: [
+    { item: "Mushrooms (cremini)", qty: 16, unit: "oz", store: "publix" },
+    { item: "Cream cheese", qty: 6, unit: "oz", store: "costco" },
+    { item: "Bacon (sugar-free)", qty: 6, unit: "slices", store: "costco" },
+    { item: "Cheddar (block)", qty: 0.5, unit: "cup", store: "costco" },
+    { item: "Garlic", qty: 2, unit: "cloves", store: "publix" },
+    { item: "Green onion", qty: 1, unit: "bunch", store: "publix" }
+  ]},
+  "keto-boursin-quiche": { name: "Crustless Boursin Egg Quiche", ingredients: [
+    { item: "Eggs", qty: 8, unit: "", store: "costco" },
+    { item: "Boursin cheese (garlic & herb)", qty: 1, unit: "(5.2oz)", store: "publix" },
+    { item: "Heavy whipping cream", qty: 0.5, unit: "cup", store: "costco" },
+    { item: "Spinach", qty: 2, unit: "cups", store: "publix" },
+    { item: "Mushrooms (cremini)", qty: 6, unit: "oz", store: "publix" },
+    { item: "Salt & pepper", qty: null, unit: "", store: "publix", staple: true }
+  ]},
+  "paleo-chia-pudding": { name: "Coconut Chia Pudding", ingredients: [
+    { item: "Chia seeds", qty: 0.5, unit: "cup", store: "amazon" },
+    { item: "Coconut milk (full-fat)", qty: 1, unit: "(13.5oz can)", store: "publix" },
+    { item: "Maple syrup", qty: 2, unit: "tbsp", store: "publix" },
+    { item: "Vanilla extract", qty: 1, unit: "tsp", store: "costco", staple: true },
+    { item: "Berries (mixed)", qty: 1, unit: "cup", store: "publix" }
+  ]},
+  "paleo-smoked-salmon-avocado": { name: "Smoked Salmon & Avocado Plate", ingredients: [
+    { item: "Smoked salmon", qty: 6, unit: "oz", store: "publix" },
+    { item: "Avocados", qty: 2, unit: "", store: "publix" },
+    { item: "Cucumber", qty: 1, unit: "", store: "publix" },
+    { item: "Lemon", qty: 1, unit: "", store: "publix" },
+    { item: "Capers", qty: 1, unit: "tbsp", store: "amazon" },
+    { item: "Olive oil", qty: 1, unit: "tbsp", store: "costco", staple: true }
+  ]},
+  "paleo-honey-garlic-chicken": { name: "Honey Garlic Chicken", ingredients: [
+    { item: "Chicken thighs (boneless)", qty: 1.5, unit: "lb", store: "costco" },
+    { item: "Honey", qty: 3, unit: "tbsp", store: "publix" },
+    { item: "Coconut aminos", qty: 3, unit: "tbsp", store: "amazon" },
+    { item: "Garlic", qty: 5, unit: "cloves", store: "publix" },
+    { item: "Ginger", qty: 1, unit: "tbsp", store: "publix" },
+    { item: "Green beans", qty: 12, unit: "oz", store: "publix" },
+    { item: "Avocado oil", qty: 1, unit: "tbsp", store: "costco", staple: true }
+  ]},
+  "std-cottage-cheese-pancakes": { name: "Cottage Cheese Protein Pancakes", ingredients: [
+    { item: "Cottage cheese", qty: 1, unit: "cup", store: "costco" },
+    { item: "Eggs", qty: 4, unit: "", store: "costco" },
+    { item: "Oats (rolled)", qty: 1, unit: "cup", store: "costco" },
+    { item: "Banana", qty: 1, unit: "", store: "publix" },
+    { item: "Baking powder", qty: 1, unit: "tsp", store: "publix", staple: true },
+    { item: "Vanilla extract", qty: 1, unit: "tsp", store: "costco", staple: true }
+  ]},
+  "std-baked-pumpkin-oats": { name: "Baked Pumpkin Protein Oats", ingredients: [
+    { item: "Oats (rolled)", qty: 2, unit: "cups", store: "costco" },
+    { item: "Pumpkin puree", qty: 1, unit: "cup", store: "publix" },
+    { item: "Greek yogurt", qty: 1, unit: "cup", store: "publix" },
+    { item: "Eggs", qty: 2, unit: "", store: "costco" },
+    { item: "Maple syrup", qty: 3, unit: "tbsp", store: "publix" },
+    { item: "Protein powder (vanilla)", qty: 1, unit: "scoop", store: "amazon" },
+    { item: "Pumpkin pie spice", qty: 1, unit: "tbsp", store: "publix", staple: true }
+  ]},
+  "std-apple-peanut-butter": { name: "Apple & Peanut Butter", ingredients: [
+    { item: "Apple", qty: 1, unit: "", store: "publix" },
+    { item: "Peanut butter", qty: 2, unit: "tbsp", store: "costco" }
+  ]},
+  "plant-roasted-chickpeas": { name: "Crispy Roasted Chickpeas", ingredients: [
+    { item: "Chickpeas", qty: 2, unit: "(15oz cans)", store: "publix" },
+    { item: "Olive oil", qty: 2, unit: "tbsp", store: "costco", staple: true },
+    { item: "Paprika", qty: 1, unit: "tsp", store: "publix", staple: true },
+    { item: "Garlic powder", qty: 1, unit: "tsp", store: "publix", staple: true },
+    { item: "Salt", qty: null, unit: "", store: "publix", staple: true }
+  ]},
+  "plant-edamame-snack": { name: "Sea-Salt Edamame", ingredients: [
+    { item: "Edamame (in shell, frozen)", qty: 16, unit: "oz", store: "costco" },
+    { item: "Sesame oil", qty: 1, unit: "tsp", store: "amazon" },
+    { item: "Sea salt", qty: null, unit: "pinch", store: "publix", staple: true }
+  ]},
+  "plant-teriyaki-tofu-broccoli": { name: "Teriyaki Tofu & Broccoli", ingredients: [
+    { item: "Extra-firm tofu", qty: 14, unit: "oz", store: "publix" },
+    { item: "Broccoli", qty: 12, unit: "oz", store: "publix" },
+    { item: "Coconut aminos", qty: 3, unit: "tbsp", store: "amazon" },
+    { item: "Maple syrup", qty: 1, unit: "tbsp", store: "publix" },
+    { item: "Garlic", qty: 3, unit: "cloves", store: "publix" },
+    { item: "Ginger", qty: 1, unit: "tbsp", store: "publix" },
+    { item: "Rice (cooked)", qty: 1.5, unit: "cups", store: "costco" },
+    { item: "Sesame oil", qty: 1, unit: "tbsp", store: "amazon" }
+  ]}
 
 };
 
@@ -400,7 +493,16 @@ window.RECIPE_META = {
   "staple-shrimp":["any",170,34,2,2], "staple-sardines":["any",200,23,0,11], "staple-avocado":["any",240,3,12,22],
   "staple-spinach":["any",14,2,2,0], "staple-broccoli":["any",50,4,10,0], "staple-cauliflower":["any",40,3,8,0],
   "staple-asparagus":["any",20,2,4,0], "staple-brussels":["any",40,3,8,0], "staple-green-beans":["any",35,2,8,0],
-  "staple-butter":["any",100,0,0,11], "staple-cheese":["any",110,7,1,9], "staple-avocado-oil":["any",120,0,0,14]
+  "staple-butter":["any",100,0,0,11], "staple-cheese":["any",110,7,1,9], "staple-avocado-oil":["any",120,0,0,14],
+  // added 2026-06-03 (web-sourced, balanced batch)
+  "keto-cottage-egg-bites":["keto",150,14,3,9], "keto-bacon-stuffed-mushrooms":["keto",230,11,5,19],
+  "keto-boursin-quiche":["keto",440,33,6,32],
+  "paleo-chia-pudding":["paleo",260,7,22,17], "paleo-smoked-salmon-avocado":["paleo",350,24,9,26],
+  "paleo-honey-garlic-chicken":["paleo",430,38,20,20],
+  "std-cottage-cheese-pancakes":["standard",420,34,38,12], "std-baked-pumpkin-oats":["standard",326,25,42,8],
+  "std-apple-peanut-butter":["standard",210,7,25,12],
+  "plant-roasted-chickpeas":["plant",130,6,18,4], "plant-edamame-snack":["plant",120,11,9,5],
+  "plant-teriyaki-tofu-broccoli":["plant",330,21,28,14]
 };
 
 /* Meal-type tags for the planner's meal-type filter. Arrays — a recipe can fit
@@ -461,7 +563,14 @@ window.RECIPE_MEAL = {
   "staple-sausage":["breakfast","dinner"], "staple-bacon":["breakfast","side"], "staple-eggs":["breakfast"],
   "staple-shrimp":["lunch","dinner"], "staple-sardines":["lunch","dinner","snack"], "staple-avocado":["side"],
   "staple-spinach":["side"], "staple-broccoli":["side"], "staple-cauliflower":["side"],
-  "staple-asparagus":["side"], "staple-brussels":["side"], "staple-green-beans":["side"]
+  "staple-asparagus":["side"], "staple-brussels":["side"], "staple-green-beans":["side"],
+  // added 2026-06-03 (web-sourced, balanced batch)
+  "keto-cottage-egg-bites":["breakfast","snack"], "keto-bacon-stuffed-mushrooms":["snack"],
+  "keto-boursin-quiche":["breakfast"], "paleo-chia-pudding":["breakfast","snack"],
+  "paleo-smoked-salmon-avocado":["breakfast","lunch"], "paleo-honey-garlic-chicken":["lunch","dinner"],
+  "std-cottage-cheese-pancakes":["breakfast"], "std-baked-pumpkin-oats":["breakfast","snack"],
+  "std-apple-peanut-butter":["snack"], "plant-roasted-chickpeas":["snack","side"],
+  "plant-edamame-snack":["snack","side"], "plant-teriyaki-tofu-broccoli":["lunch","dinner"]
 };
 
 /* Recipes that should NOT appear in the day-by-day meal picker (condiments,
@@ -523,7 +632,11 @@ window.RECIPE_COST = {
   "staple-eggs": 1, "staple-shrimp": 5, "staple-sardines": 2, "staple-avocado": 1,
   "staple-spinach": 1, "staple-broccoli": 1, "staple-cauliflower": 1, "staple-asparagus": 2,
   "staple-brussels": 2, "staple-green-beans": 1, "staple-butter": 5, "staple-cheese": 4,
-  "staple-avocado-oil": 9
+  "staple-avocado-oil": 9,
+  "keto-cottage-egg-bites": 6, "keto-bacon-stuffed-mushrooms": 9, "keto-boursin-quiche": 11,
+  "paleo-chia-pudding": 7, "paleo-smoked-salmon-avocado": 13, "paleo-honey-garlic-chicken": 10,
+  "std-cottage-cheese-pancakes": 5, "std-baked-pumpkin-oats": 7, "std-apple-peanut-butter": 2,
+  "plant-roasted-chickpeas": 3, "plant-edamame-snack": 4, "plant-teriyaki-tofu-broccoli": 7
 };
 
 /* Items that go on the shopping list but should NOT count as a "meal"
