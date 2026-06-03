@@ -85,7 +85,7 @@
 
   // ---------- context from the app's localStorage ----------
   var DAYS = [['mon','Mon'],['tue','Tue'],['wed','Wed'],['thu','Thu'],['fri','Fri'],['sat','Sat'],['sun','Sun']];
-  var TYPE_NAMES = { lower:'Lower/Squat', upper:'Upper', push:'Push', pull:'Pull', legs:'Legs', hinge:'Hinge/Deadlift', fullbody:'Full Body', bodyweight:'Bodyweight', wod:'WOD', conditioning:'Conditioning', run:'Run', longrun:'Long Run', rest:'Rest' };
+  var TYPE_NAMES = { lower:'Lower/Squat', runsupport:'Lower/Running-Supportive', upper:'Upper', push:'Push', pull:'Pull', legs:'Legs', hinge:'Hinge/Deadlift', fullbody:'Full Body', bodyweight:'Bodyweight', wod:'WOD', conditioning:'Conditioning', run:'Run', longrun:'Long Run', rest:'Rest' };
   function getJSON(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } }
 
   function buildContext() {
@@ -103,6 +103,12 @@
         tl.push(d[1] + ': ' + t + (dp.length ? (' — ' + dp.join('; ')) : ''));
       });
       if (any || Object.keys(layout).length) lines.push('TRAINING WEEK:\n' + tl.join('\n'));
+    } catch (e) {}
+    // Logged lifts (most recent load per movement)
+    try {
+      var log = getJSON('lift-log-v1', {}), ll = [];
+      Object.keys(log).forEach(function(mv) { var r = log[mv]; if (r && r.v) ll.push(mv + ': ' + r.v); });
+      if (ll.length) lines.push('LOGGED LIFTS (last load each):\n' + ll.join('\n'));
     } catch (e) {}
     // Meals
     try {

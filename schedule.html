@@ -19,6 +19,13 @@
   .summary-bar .track { flex: 1; height: 8px; background: #1e1e26; border-radius: 4px; overflow: hidden; }
   .summary-bar .fill { height: 100%; background: linear-gradient(to right,#1a7a5a,#2a9a5a); width: 0%; transition: width 0.3s; }
   .reset { font-size: 0.66rem; color: #777; background: none; border: 1px solid #2a2a33; border-radius: 6px; padding: 6px 11px; cursor: pointer; font-family: inherit; }
+  .load-readout { background: #131318; border: 1px solid #1e1e26; border-radius: 10px; padding: 11px 15px; margin-bottom: 16px; }
+  .lr-bars { display: flex; gap: 6px; align-items: center; font-size: 0.72rem; color: #aab; }
+  .lr-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 12px; background: #0f0f13; border: 1px solid #20202a; font-weight: 700; }
+  .lr-pill .d { width: 8px; height: 8px; border-radius: 50%; }
+  .lr-pill.high .d { background: #e0703a; } .lr-pill.mod .d { background: #4a8ad0; } .lr-pill.low .d { background: #4a9a5a; }
+  .lr-flag { font-size: 0.76rem; color: #e0c070; margin-top: 8px; line-height: 1.4; }
+  .lr-flag.ok { color: #8ce0a8; }
   .day { background: #131318; border: 1px solid #1e1e26; border-radius: 12px; margin-bottom: 9px; overflow: hidden; }
   .day.done { border-color: #2a5a3a; }
   .day.today { border-color: #4a6aaa; box-shadow: 0 0 14px rgba(74,106,170,0.18); }
@@ -67,6 +74,7 @@
   <button class="reset" id="reset">Reset week</button>
 </div>
 
+<div class="load-readout" id="load-readout"></div>
 <div id="week"></div>
 
 <footer>Open the <a href="workout.html">Train builder</a> to set day types &amp; pick workouts</footer>
@@ -80,8 +88,9 @@
   var WMAP = {}; (window.WODS || []).forEach(function(w){ WMAP[w[0].toLowerCase()] = w; });
   // Module ids per day-type — used to hide picks left over from a previous type on the same day
   var TYPE_MODULES = {
-    rest:[], run:[], longrun:[], conditioning:['session','core'], bodyweight:['wod','core'],
-    lower:['squat','uni','post','calf'], upper:['hpress','vpull','vpress','hpull','arms'],
+    rest:[], run:['runtype'], longrun:['dist'], conditioning:['session','core'], bodyweight:['wod','core'],
+    lower:['squat','uni','post','calf'], runsupport:['uni','post','lowerleg','stability'],
+    upper:['hpress','vpull','vpress','hpull','arms'],
     push:['hpress','vpress','acc','tri'], pull:['vpull','hpull','rear','bi'],
     legs:['squat','hinge','uni','calf'], hinge:['dl','acc','uni','grip'],
     fullbody:['legs','press','pull','fin'], wod:['skill','wod']
@@ -89,9 +98,9 @@
 
   var DAYS = [['mon','Monday'],['tue','Tuesday'],['wed','Wednesday'],['thu','Thursday'],['fri','Friday'],['sat','Saturday'],['sun','Sunday']];
   var DEFAULT_LAYOUT = { mon:'bodyweight', tue:'lower', wed:'run', thu:'upper', fri:'wod', sat:'longrun', sun:'rest' };
-  var TITLE = { bodyweight:'Bodyweight', lower:'Lower — Squat', upper:'Upper Body', push:'Push', pull:'Pull', legs:'Legs', hinge:'Hinge — Deadlift', fullbody:'Full Body', wod:'WOD', conditioning:'Conditioning', run:'Medium Run — 2–3 mi', longrun:'Long Run', rest:'Rest / Mobility' };
-  var STRESS = { bodyweight:'s-mod', lower:'s-high', upper:'s-mod', push:'s-mod', pull:'s-mod', legs:'s-high', hinge:'s-high', fullbody:'s-mod', wod:'s-high', conditioning:'s-mod', run:'s-mod', longrun:'s-mod', rest:'s-low' };
-  var NOTE = { run:'Conversational pace, Zone 3.', longrun:'Build 3 → 6 mi, Zone 2–3.', conditioning:'Intervals or Zone-2 cardio.', rest:'Walk + mobility. No lifting.' };
+  var TITLE = { bodyweight:'Bodyweight', lower:'Lower — Squat', runsupport:'Lower — Running-Supportive', upper:'Upper Body', push:'Push', pull:'Pull', legs:'Legs', hinge:'Hinge — Deadlift', fullbody:'Full Body', wod:'WOD', conditioning:'Conditioning', run:'Run', longrun:'Long Run', rest:'Rest / Mobility' };
+  var STRESS = { bodyweight:'s-mod', lower:'s-high', runsupport:'s-mod', upper:'s-mod', push:'s-mod', pull:'s-mod', legs:'s-high', hinge:'s-high', fullbody:'s-mod', wod:'s-high', conditioning:'s-mod', run:'s-mod', longrun:'s-mod', rest:'s-low' };
+  var NOTE = { run:'Pick a session in Train (easy / tempo / intervals).', longrun:'Slow Zone 2–3 build, ~10%/week.', conditioning:'Intervals or Zone-2 cardio.', rest:'Walk + mobility. No lifting.' };
 
   function getJSON(k, d){ try { return JSON.parse(localStorage.getItem(k)) || d; } catch(e){ return d; } }
   function setJSON(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
@@ -104,10 +113,13 @@
     var picks = getJSON(PICKS, {});
     var weekEl = document.getElementById('week');
     var html = '', doneN = 0;
+    var loadCt = { 's-high':0, 's-mod':0, 's-low':0 }, restCount = 0;
 
     DAYS.forEach(function(d) {
       var day = d[0], name = d[1];
       var type = layout[day], title = TITLE[type] || type, stress = STRESS[type] || 's-mod';
+      loadCt[stress] = (loadCt[stress] || 0) + 1;
+      if (type === 'rest') restCount++;
       var isDone = !!done[day]; if (isDone) doneN++;
       var isToday = day === todayKey;
       html += '<div class="day ' + stress + (isDone ? ' done' : '') + (isToday ? ' today' : '')+'" data-day="'+day+'">';
@@ -146,6 +158,19 @@
     weekEl.innerHTML = html;
     document.getElementById('done-count').textContent = doneN + '/7';
     document.getElementById('fill').style.width = (doneN/7*100) + '%';
+
+    // Weekly load readout — balance at a glance
+    var flags = [];
+    if (restCount === 0) flags.push('⚠️ No full rest day this week — recovery drives adaptation.');
+    if (loadCt['s-high'] > 3) flags.push('⚠️ ' + loadCt['s-high'] + ' high-stress days — that\'s a lot of hard sessions to recover from.');
+    var flagHtml = flags.length
+      ? flags.map(function(f){ return '<div class="lr-flag">' + f + '</div>'; }).join('')
+      : '<div class="lr-flag ok">✓ Balanced load — enough hard, enough easy, rest day present.</div>';
+    document.getElementById('load-readout').innerHTML =
+      '<div class="lr-bars">This week: ' +
+      '<span class="lr-pill high"><span class="d"></span>' + loadCt['s-high'] + ' high</span>' +
+      '<span class="lr-pill mod"><span class="d"></span>' + loadCt['s-mod'] + ' mod</span>' +
+      '<span class="lr-pill low"><span class="d"></span>' + loadCt['s-low'] + ' low</span></div>' + flagHtml;
 
     weekEl.querySelectorAll('.check').forEach(function(box) {
       box.onclick = function() {

@@ -52,6 +52,25 @@
   .opt.sel .pick::after { content: ''; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
   .opt b { color: #6ad08a; }
 
+  /* Sequencing guard + deload nudge */
+  #seq-guard { margin-bottom: 4px; }
+  .guard { display: flex; gap: 9px; align-items: flex-start; background: #1f1a0e; border: 1px solid #6a5a2a; border-radius: 10px; padding: 11px 13px; margin-bottom: 7px; font-size: 0.8rem; line-height: 1.45; color: #e0d2a0; }
+  .guard .gi { flex-shrink: 0; font-size: 0.95rem; line-height: 1.3; }
+  .guard b { color: #f0d890; }
+  .guard.ok { background: #11251a; border-color: #2a6a4a; color: #9fd8b4; }
+  .guard.ok b { color: #8ce0a8; }
+  .guard.deload { background: #1a1326; border-color: #5a3a8a; color: #cbb6e8; }
+  .guard.deload b { color: #c89af0; }
+
+  /* Progression log (per selected lift) */
+  .log-row { display: flex; align-items: center; gap: 8px; margin: 4px 0 2px 26px; font-size: 0.74rem; color: #8a93a0; }
+  .log-row .last { color: #6aa0c0; white-space: nowrap; }
+  .log-row .last b { color: #8cc8e0; font-weight: 700; }
+  .log-row input { flex: 1; min-width: 0; background: #0a0a0d; border: 1px solid #24303a; color: #cfe2ee; border-radius: 6px; padding: 6px 9px; font-size: 0.78rem; font-family: inherit; }
+  .log-row input::placeholder { color: #4a5663; }
+  .log-row .saved { color: #6ad08a; font-size: 0.7rem; opacity: 0; transition: opacity 0.2s; }
+  .log-row .saved.show { opacity: 1; }
+
   /* WOD picker */
   .wod-search { width: 100%; background: #0a0a0d; border: 1px solid #2a2a33; color: #fff; border-radius: 8px; padding: 9px 12px; font-size: 0.88rem; font-family: inherit; }
   .wod-chosen { background: #11251a; border: 1px solid #2a8a52; border-radius: 8px; padding: 10px 12px; margin-top: 6px; font-size: 0.84rem; color: #eafff0; }
@@ -104,6 +123,7 @@
 </div>
 
 <h2>Your Week</h2>
+<div id="seq-guard"></div>
 <div id="week"></div>
 <button class="reset-week" id="reset-week">↺ Reset day checkmarks (new week)</button>
 
@@ -117,11 +137,22 @@
   var LAYOUT_KEY = 'week-layout';
   var PICKS_KEY = 'workout-picks-v2';
   var DONE_KEY = 'workout-week-done';
+  var LIFTLOG_KEY = 'lift-log-v1';      // { "<movement option text>": { v:"205", d:<ts> } }
+  var WEEKCOUNT_KEY = 'train-week-count';  // increments each "new week" reset → drives deload nudge
+  var DELOAD_EVERY = 5;                  // nudge a deload every Nth trained week
+
+  // Strength modules whose selected movements are worth logging a load for.
+  // (Excludes cardio/core/skill/stability/calf-style accessory + WOD modules to keep the log focused.)
+  var LOGGABLE_MODS = { squat:1, dl:1, uni:1, post:1, hpress:1, vpress:1, vpull:1, hpull:1, arms:1, acc:1, tri:1, rear:1, bi:1, hinge:1, legs:1, press:1, pull:1, grip:1 };
 
   var TYPES = {
     rest:       { title:'Rest / Mobility',        stress:'s-low',  note:'Easy 20–30 min walk + 10 min mobility on what\'s tight. No lifting, no metcon — recovery is the point.', modules:[] },
-    run:        { title:'Medium Run — 2–3 mi',    stress:'s-mod',  note:'Conversational pace, Zone 3. Walk the hills if heart rate spikes. Engine builder, not a race.', modules:[] },
-    longrun:    { title:'Long Run',               stress:'s-mod',  note:'Build 3 → 6 mi over months. Slow, Zone 2–3. Walk-run: run until HR climbs, walk until it settles.', modules:[] },
+    run:        { title:'Run',                    stress:'s-mod',  note:'Your engine is the limiter — so it gets real structure. 80/20 rule: keep most running easy (Zone 2). Grow weekly volume ~10% at a time, not every week.', modules:[
+      { id:'runtype', label:'Pick the session', opts:['Easy — 2–3 mi, Zone 2, conversational','Tempo — 20 min comfortably hard (Zone 3–4)','Intervals — 6×400 m hard / 90s easy jog','Hills — 8×30s uphill hard, walk down','Recovery jog — 20 min very easy'] }
+    ]},
+    longrun:    { title:'Long Run',               stress:'s-mod',  note:'Slow, Zone 2–3. Walk-run: run until HR climbs, walk until it settles. Build distance ~10%/week — and not every week. This is the engine builder.', modules:[
+      { id:'dist', label:'Today’s distance', opts:['3 mi','4 mi','5 mi','6 mi','7+ mi'] }
+    ]},
     conditioning:{ title:'Conditioning / Cardio', stress:'s-mod', modules:[
       { id:'session', label:'Pick a session', opts:['Row 5×500 m, rest 1 min','Bike/Run 8×30s hard / 90s easy','Run intervals 6×400 m, rest 90s','EMOM 20 — 12-cal row / 12 KB swing / 12 burpee','30 min Zone-2 row, bike or ruck','Jump rope 10×1 min, rest 30s'] },
       { id:'core', label:'Finisher — core (optional)', opts:['Plank ladder (30-45-60s)','Hollow hold + superman ×3','Hanging knee raises 3×12'] }
@@ -135,6 +166,12 @@
       { id:'uni', label:'B — Unilateral', opts:['Bulgarian split squat 3×10/leg','Walking lunge 3×12/leg','DB step-up 3×10/leg','Reverse lunge 3×10/leg'] },
       { id:'post', label:'C — Posterior chain', opts:['Romanian deadlift 3×10','Good morning 3×10','DB hip thrust 3×12','KB/DB swing 4×15'] },
       { id:'calf', label:'D — Calves + core', opts:['Calf raise 3×20 + plank','Weighted carry 3×40 m','Hanging knee raise 3×12','Slam ball 3×15 + side plank'] }
+    ]},
+    runsupport: { title:'Lower — Running-Supportive', stress:'s-mod', note:'Low-CNS leg work that builds the legs FOR running instead of trashing them. Single-leg, posterior chain, calves/feet, hip stability. Use this on a day next to a run instead of heavy squats.', modules:[
+      { id:'uni', label:'A — Single-leg', opts:['Bulgarian split squat 3×10/leg','Walking lunge 3×12/leg','Step-up 3×10/leg','Reverse lunge 3×10/leg'] },
+      { id:'post', label:'B — Posterior chain / glutes', opts:['Romanian deadlift 3×10 (moderate)','Hip thrust 3×12','Single-leg RDL 3×10/leg','Glute bridge 3×15'] },
+      { id:'lowerleg', label:'C — Calves / feet / ankles', opts:['Calf raise 3×20','Single-leg calf raise 3×12/leg','Tibialis raise 3×15','Pogo hops 3×20 (light, springy)'] },
+      { id:'stability', label:'D — Hip & core stability', opts:['Side plank 3×30s/side','Copenhagen plank 3×20s/side','Pallof press 3×12/side','Suitcase carry 3×30 m/side'] }
     ]},
     upper:      { title:'Upper Body',              stress:'s-mod',  modules:[
       { id:'hpress', label:'A — Horizontal press', opts:['Bench Press 5×5 @ 70–75%','DB Bench 4×8','Incline DB Press 3×10','Weighted Push-up 4×12'] },
@@ -168,7 +205,7 @@
       { id:'grip', label:'D — Grip + core', opts:['Farmer Carry 3×40 m','Hanging Leg Raise 3×12','Weighted Plank 3×45s','Suitcase Carry 3×30 m/side'] }
     ]},
     fullbody:   { title:'Full Body',               stress:'s-mod', modules:[
-      { id:'legs', label:'A — Squat or hinge', opts:['Back Squat 4×6','Deadlift 4×5','Front Squat 4×8','Goblet Squat 4×12'] },
+      { id:'legs', label:'A — Lower (squat / hinge / single-leg)', opts:['Back Squat 4×6','Deadlift 4×5','Front Squat 4×8','Goblet Squat 4×12','Bulgarian Split Squat 3×10/leg','DB Walking Lunge 3×12/leg'] },
       { id:'press', label:'B — Press', opts:['Bench Press 4×6','Overhead Press 4×6','DB Bench 4×8','Push-ups 4×15'] },
       { id:'pull', label:'C — Pull', opts:['Pull-ups 4×max','Barbell Row 4×8','1-arm DB Row 3×10/arm','Lat Pulldown 4×10'] },
       { id:'fin', label:'D — Conditioning finisher (optional)', opts:['10 min EMOM — KB swing / burpee','Row 5×250 m','Tabata bike / run','100 burpees for time'] }
@@ -180,8 +217,8 @@
   };
 
   // Dropdown order + short labels for the per-day picker
-  var TYPE_ORDER = ['lower','upper','push','pull','legs','hinge','fullbody','bodyweight','wod','conditioning','run','longrun','rest'];
-  var TYPE_NAMES = { lower:'Lower / Squat', upper:'Upper Body', push:'Push', pull:'Pull', legs:'Legs', hinge:'Hinge / Deadlift', fullbody:'Full Body', bodyweight:'Bodyweight', wod:'WOD', conditioning:'Conditioning', run:'Medium Run', longrun:'Long Run', rest:'Rest / Mobility' };
+  var TYPE_ORDER = ['lower','runsupport','upper','push','pull','legs','hinge','fullbody','bodyweight','wod','conditioning','run','longrun','rest'];
+  var TYPE_NAMES = { lower:'Lower / Squat', runsupport:'Lower — Running-Supportive', upper:'Upper Body', push:'Push', pull:'Pull', legs:'Legs', hinge:'Hinge / Deadlift', fullbody:'Full Body', bodyweight:'Bodyweight', wod:'WOD', conditioning:'Conditioning', run:'Run', longrun:'Long Run', rest:'Rest / Mobility' };
 
   // Whole-week split templates — load one, then tweak any day
   var TEMPLATES = {
@@ -203,6 +240,7 @@
   var layout = Object.assign({}, DEFAULT_LAYOUT, getJSON(LAYOUT_KEY, {}));
   var picks = getJSON(PICKS_KEY, {});
   var done = getJSON(DONE_KEY, {});
+  var liftLog = getJSON(LIFTLOG_KEY, {});
 
   function validMods(type) { var T = TYPES[type]; return T ? T.modules.map(function(m){ return m.id; }) : []; }
   function clearDayPicks(day) {
@@ -223,6 +261,69 @@
 
   function esc(s){ return s; }
 
+  // ---------- progression log ----------
+  function fmtDate(ts){ try { var d = new Date(ts); return (d.getMonth()+1) + '/' + d.getDate(); } catch(e){ return ''; } }
+  function logRowHTML(optText){
+    var rec = liftLog[optText];
+    var last = rec
+      ? 'last: <b>' + ('' + rec.v).replace(/</g,'') + '</b>' + (rec.d ? ' (' + fmtDate(rec.d) + ')' : '')
+      : 'no log yet';
+    return '<div class="log-row" data-lift="' + optText.replace(/"/g,'&quot;') + '">' +
+      '<span class="last">' + last + '</span>' +
+      '<input type="text" placeholder="log load… e.g. 205×5">' +
+      '<span class="saved">saved ✓</span></div>';
+  }
+  function wireLogRow(row){
+    if (!row) return;
+    var lift = row.dataset.lift;
+    var inp = row.querySelector('input');
+    var saved = row.querySelector('.saved');
+    if (!inp) return;
+    inp.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); inp.blur(); } };
+    inp.onblur = function(){
+      var v = (inp.value || '').trim();
+      if (!v) return;
+      liftLog[lift] = { v: v, d: Date.now() };
+      setJSON(LIFTLOG_KEY, liftLog);
+      var lastEl = row.querySelector('.last');
+      if (lastEl) lastEl.innerHTML = 'last: <b>' + v.replace(/</g,'') + '</b> (' + fmtDate(Date.now()) + ')';
+      inp.value = '';
+      saved.classList.add('show'); setTimeout(function(){ saved.classList.remove('show'); }, 1200);
+    };
+  }
+
+  // ---------- sequencing guard + deload nudge ----------
+  var ORDER = ['mon','tue','wed','thu','fri','sat','sun'];
+  var SHORT = { mon:'Mon', tue:'Tue', wed:'Wed', thu:'Thu', fri:'Fri', sat:'Sat', sun:'Sun' };
+  var RUN_TYPES = { run:1, longrun:1 };
+  var HEAVY_LOWER = { lower:1, legs:1, hinge:1 };
+  function stressOf(type){ var T = TYPES[type]; return T ? T.stress : 's-mod'; }
+  function renderGuard(){
+    var el = document.getElementById('seq-guard');
+    if (!el) return;
+    var warns = [];
+    for (var i = 0; i < ORDER.length; i++) {
+      var a = ORDER[i], b = ORDER[(i + 1) % ORDER.length];   // wrap Sun→Mon (the week repeats)
+      var ta = layout[a], tb = layout[b];
+      if (HEAVY_LOWER[ta] && RUN_TYPES[tb])
+        warns.push('<b>' + SHORT[a] + '</b> is heavy lower the day before <b>' + SHORT[b] + '</b>’s run — DOMS can flatten the run. Swap ' + SHORT[a] + ' to <b>Running-Supportive</b>, or move the heavy work.');
+      if (stressOf(ta) === 's-high' && stressOf(tb) === 's-high')
+        warns.push('<b>' + SHORT[a] + '</b> and <b>' + SHORT[b] + '</b> are both high-stress, back-to-back — consider an easy or recovery day between them.');
+    }
+    if (!ORDER.some(function(d){ return layout[d] === 'rest'; }))
+      warns.push('No full <b>rest day</b> this week — recovery is where the adaptation actually happens.');
+
+    var html = '';
+    var wc = parseInt(localStorage.getItem(WEEKCOUNT_KEY) || '0', 10) || 0;
+    if (wc > 0 && wc % DELOAD_EVERY === 0)
+      html += '<div class="guard deload"><span class="gi">🌙</span><div>You’ve logged <b>' + wc + ' weeks</b> — a good point for a <b>deload</b>: same movements, ~50% volume / lighter loads for one week. Recovery capacity drops under sustained stress.</div></div>';
+    if (warns.length)
+      html += warns.map(function(w){ return '<div class="guard"><span class="gi">⚠️</span><div>' + w + '</div></div>'; }).join('');
+    else if (!html)
+      html += '<div class="guard ok"><span class="gi">✓</span><div>Week looks well-sequenced — no stacked high-stress days, no heavy legs the day before a run, rest day present.</div></div>';
+    el.innerHTML = html;
+  }
+
   function moduleHTML(day, mod) {
     if (mod.wod) {
       var chosen = picks[day + ':wod'];
@@ -235,9 +336,12 @@
       return html;
     }
     var selArr = asArr(picks[day + ':' + mod.id]);
+    var loggable = !!LOGGABLE_MODS[mod.id];
     var opts = mod.opts.map(function(o) {
-      var on = (selArr.indexOf(o) > -1) ? ' sel' : '';
-      return '<div class="opt' + on + '" data-day="' + day + '" data-mod="' + mod.id + '" data-val="' + o.replace(/"/g,'&quot;') + '"><div class="pick"></div><div>' + o + '</div></div>';
+      var sel = selArr.indexOf(o) > -1;
+      var html = '<div class="opt' + (sel ? ' sel' : '') + '" data-day="' + day + '" data-mod="' + mod.id + '" data-val="' + o.replace(/"/g,'&quot;') + '"><div class="pick"></div><div>' + o + '</div></div>';
+      if (loggable && sel) html += logRowHTML(o);   // show load log under already-chosen lifts
+      return html;
     }).join('');
     var hint = mod.opts.length > 1 ? '<div class="multi-hint">tap one or more</div>' : '';
     return '<div class="module"><div class="module-label">' + mod.label + '</div>' + hint + opts + '</div>';
@@ -278,6 +382,7 @@
     });
     weekEl.innerHTML = html;
     wire();
+    renderGuard();
   }
 
   function refreshDay(day) {
@@ -288,6 +393,7 @@
     weekEl.querySelector('[data-title="' + day + '"]').textContent = T.title;
     card.className = 'day-card ' + T.stress + (done[day] ? ' done' : '') + ' open';
     wire();
+    renderGuard();
   }
 
   function wire() {
@@ -323,12 +429,22 @@
         var key = opt.dataset.day + ':' + opt.dataset.mod, val = opt.dataset.val;
         var arr = asArr(picks[key]);     // multi-select: toggle this option in/out
         var i = arr.indexOf(val);
-        if (i > -1) { arr.splice(i, 1); opt.classList.remove('sel'); }
-        else { arr.push(val); opt.classList.add('sel'); }
+        var nx = opt.nextElementSibling;
+        if (i > -1) {
+          arr.splice(i, 1); opt.classList.remove('sel');
+          if (nx && nx.classList.contains('log-row')) nx.remove();   // drop its load log
+        } else {
+          arr.push(val); opt.classList.add('sel');
+          if (LOGGABLE_MODS[opt.dataset.mod] && !(nx && nx.classList.contains('log-row'))) {
+            opt.insertAdjacentHTML('afterend', logRowHTML(val));
+            wireLogRow(opt.nextElementSibling);
+          }
+        }
         if (arr.length) picks[key] = arr; else delete picks[key];
         setJSON(PICKS_KEY, picks);
       };
     });
+    weekEl.querySelectorAll('.log-row').forEach(wireLogRow);
     // WOD search
     weekEl.querySelectorAll('.wod-search').forEach(function(inp) {
       inp.oninput = function() { renderWodResults(inp.dataset.day, inp.value); };
@@ -379,6 +495,9 @@
     if (confirm('Reset all day checkmarks for a new week? (Your layout & picks stay saved.)')) {
       done = {}; setJSON(DONE_KEY, done);
       weekEl.querySelectorAll('.day-card').forEach(function(c){ c.classList.remove('done'); });
+      var wc = (parseInt(localStorage.getItem(WEEKCOUNT_KEY) || '0', 10) || 0) + 1;
+      localStorage.setItem(WEEKCOUNT_KEY, wc);   // counts trained weeks → deload nudge
+      renderGuard();
     }
   };
 
